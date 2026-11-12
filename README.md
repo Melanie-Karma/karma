@@ -78,6 +78,24 @@ supabase/migrations/        SQL
 Punkte: bis 15 Min = 10, bis 30 Min = 20, länger = 40, „Jetzt sofort“ +5.
 Stufen ab 0 / 20 / 60 / 150 / 300 / 600 / 1000 Punkten.
 
+## Non-Profit verifizieren (nur Admin)
+
+Organisation registriert sich ganz normal, dann im SQL Editor:
+
+```sql
+update public.profiles
+   set account_type          = 'nonprofit',
+       is_verified_nonprofit = true,
+       organization_name     = 'Name der Organisation',
+       nonprofit_category    = 'animal_welfare'   -- oder 'social' / 'other'
+ where id = (select id from auth.users where email = 'kontakt@organisation.de');
+```
+
+Ab dann bekommen alle neuen Anfragen dieser Organisation automatisch 2x Karma, den
+Non-Profit-Rahmen und keine Diminishing Returns. Entziehen: `is_verified_nonprofit = false`.
+
+Das vollständige, ergänzte Briefing liegt in `docs/briefing.md`.
+
 ## Vor dem Livegang
 
 - Impressum und Datenschutzerklärung ausfüllen (Platzhalter unter `app/impressum`, `app/datenschutz`).
