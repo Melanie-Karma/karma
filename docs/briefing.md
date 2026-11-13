@@ -25,8 +25,8 @@ Im Gegensatz zu klassischen Nachbarschafts-Foren (wie nebenan.de) gibt es keinen
 - **Account-Typ:** Organisationen nutzen dieselbe App ohne separates Portal, erhalten aber den Status `nonprofit` mit sichtbarem **Herz-Badge** und ihrem Organisationsnamen (z. B. ein Tierheim oder eine Tafel).
 - **Verifizierung:** Nur durch das Karma-Team (Admin). Organisationen können sich nicht selbst freischalten, ihren Namen nach der Verifizierung nicht selbst ändern und ihren Status nicht selbst setzen. Name und Kategorie sind erst nach der Verifizierung öffentlich sichtbar.
 - **Kategorie:** Jede Organisation erhält eine Kategorie: `animal_welfare` (Tierheim, Tierschutz), `social` (Tafel, Obdachlosenhilfe, Kältebus) oder `other`. Die Kategorie entscheidet, welches Sammel-Badge eine Hilfe zählt.
-- **Swipe-Deck-Darstellung:** Karten von Non-Profits erhalten einen dezenten goldenen/grünen Rahmen, das Herz-Badge mit Organisationsnamen und den Hinweis "2x Karma".
-- **Punkte:** Bei Abschluss **2x Karma-Punkte** (`karma_multiplier = 2`).
+- **Swipe-Deck-Darstellung:** Karten von Non-Profits erhalten einen dezenten goldenen/grünen Rahmen und das Herz-Badge mit Organisationsnamen.
+- **Punkte:** Hilfe bei Organisationen zählt genauso wie Hilfe für Einzelne (kein Multiplikator, Entscheidung 13.11.2026). Organisationen sind über Herz-Badge und Rahmen sichtbar, nicht über Punkte.
 - **Social-Share-Card:** Bei Non-Profit-Hilfen wird das Organisations-Badge prominent auf der 9:16 Share-Card angezeigt.
 
 ### 1.7 Der "Bumerang-Effekt" (Top-Helfer-Priorität)
@@ -63,7 +63,7 @@ Bevor der Swipe-Feed für eine Zone live geht, sammelt die App kritische Masse p
 Sobald eine Zone freigeschaltet ist (oder für Beta-Tester), greift die Haupt-App:
 - **Onboarding (30 Sek.):** Name/Nickname, Profilfoto, optional Skill-/Werkzeug-Tags (`Auto/Transporter`, `Werkzeug/Bohrmaschine`, `Tragehilfe`, `Einkauf`, `Technik`, `Hund/Tier`).
 - **Home / Swipe-Deck:** Kartenansicht offener Anfragen im gewählten Radius (Slider 500 m bis 5 km), sortiert nach Dringlichkeit und Entfernung.
-  - Non-Profit-Karten: goldener/grüner Rahmen, Herz-Badge mit Organisationsname, "2x Karma".
+  - Non-Profit-Karten: goldener/grüner Rahmen, Herz-Badge mit Organisationsname.
   - Top-Helfer-Karten: Badge "Top-Helfer sucht Hilfe".
 - **Ticket erstellen (+ Button):** Kategorie wählen, Kurztitel (max. 80 Zeichen), Zeitfenster (`Jetzt sofort`, `Heute`, `Morgen`, `Datum wählen`), geschätzter Zeitaufwand (`15 Min`, `30 Min`, `1 Std+`).
 - **Match & Echtzeit-Chat:** Bei Swipe rechts wird der Anfragende benachrichtigt und kann den Helfer akzeptieren → 1:1-Chat (Supabase Realtime) + Standort-Detailfreigabe + "Hilfe abschließen"-Button.
@@ -160,7 +160,7 @@ Umgesetzt in `supabase/migrations/` (Basis + Delta vom 12.11.2026), inkl. Row Le
 ### Trigger-Logik bei Abschluss (`matches.status = 'confirmed'`)
 1. Punkte nach bestätigter Dauer: 10 Punkte je angefangene Viertelstunde (siehe 5.9).
 2. Keine Abwertung bei wiederholter Hilfe.
-3. Ergebnis × `karma_multiplier` (2 bei verifizierten Organisationen).
+3. Kein Multiplikator: Hilfe bei Organisationen zählt wie jede andere Hilfe.
 5. Tier-Stufe steigt automatisch mit, Aura wird wieder aktiv.
 6. Danach werden die Sammel-Badges aus der gesamten Historie neu berechnet und ergänzt.
 
@@ -187,7 +187,7 @@ Umgesetzt in `supabase/migrations/` (Basis + Delta vom 12.11.2026), inkl. Row Le
 - Einordnung: platoniq ist als Präventionskurs nach § 20 SGB V zertifiziert und wird von Krankenkassen erstattet. Das ist ein psychologisches Kursprogramm, kein Wettbewerber, aber ein Beleg dafür, dass Kassen Einsamkeit als Gesundheitsthema finanzieren. Möglicher späterer Finanzierungsweg für Karma: Pflegekassen über den Entlastungsbetrag und die Brandenburger Anerkennung von Nachbarschaftshilfe (vor Umsetzung rechtlich prüfen).
 
 ### 5.3 Messung von Anfang an
-- Beim Abschluss trägt die helfende Person die **tatsächliche Dauer** ein, die anfragende Person (oder der Träger) bestätigt sie. Die Schätzung aus der Anfrage bleibt als Vergleichswert.
+- Es zählt die Zeit, die die hilfesuchende Seite angibt: beim Einstellen der Anfrage geschätzt, nach der Hilfe bestätigt oder angepasst (siehe 5.11).
 - Gezählt werden pro Person, pro Quartier, pro Organisation und gesamt:
   - Anzahl Hilfen
   - Geleistete Stunden
@@ -239,7 +239,47 @@ Ziel: niedrige Einstiegshürde für Helfende, mehr Sicherheit dort, wo es nötig
 
 ### 5.9 Punkte und Aura (Entscheidung 13.11.2026)
 - **Hilfe ist hilfe: keine Abwertung**, auch nicht bei wiederholter Hilfe für dieselbe Person. Die frühere 7-Tage-Regel entfällt vollständig.
-- **Punkte nur nach Zeit:** 10 Punkte je angefangene Viertelstunde der bestätigten tatsächlichen Dauer. Verifizierte Organisationen: doppelte Punkte. Der frühere Bonus für „Jetzt sofort“ entfällt.
+- **Punkte nur nach Zeit:** 10 Punkte je angefangene Viertelstunde der von der hilfesuchenden Seite bestätigten Dauer (siehe 5.11). Hilfe bei Organisationen zählt genauso wie Hilfe für Einzelne. Der frühere Bonus für „Jetzt sofort“ entfällt.
 - **Kein Rückschritt der Tiere.** Wer 14 Tage nicht hilft, dessen Tier wird blasser und müder. Mit der nächsten Hilfe strahlt es wieder.
-- Schutz vor Missbrauch ohne Abwertung: Beide Seiten bestätigen die Dauer, eine einzelne Hilfe zählt höchstens 4 Stunden, und auffällige Muster (z. B. dieselben zwei Personen mehrmals am Tag) werden zur Prüfung markiert, nicht automatisch bestraft. Entlastete Fachkraftstunden zählen ohnehin nur bei Anfragen, die ein Träger bestätigt.
+- Schutz vor Missbrauch ohne Abwertung: Die hilfesuchende Seite bestätigt die Dauer, eine einzelne Hilfe zählt höchstens 4 Stunden, und auffällige Muster (z. B. dieselben zwei Personen mehrmals am Tag) werden zur Prüfung markiert, nicht automatisch bestraft. Entlastete Fachkraftstunden zählen ohnehin nur bei Anfragen, die ein Träger bestätigt.
 - Hinweis Code: Die bestehenden Migrationen enthalten noch die alte Abwertung. Sie werden beim Start der Programmierung auf diese Regeln umgestellt.
+
+### 5.10 Anfrage erstellen: Kategorie, Textvorlage, Freitext
+- Schritt 1: **Kategorie** wählen (große Kacheln mit Symbol).
+- Schritt 2: **Textvorlage** antippen, die als Titel übernommen wird. Optional Freitext ergänzen oder ganz eigenen Text schreiben.
+- Schritt 3: **Zeitaufwand** angeben (Pflicht): 15, 30, 45, 60, 90 oder 120 Minuten.
+- Schritt 4: Wann (jetzt, heute, Datum), wo (vor Ort oder per Telefon/Video), einmalig oder wiederkehrend.
+- Vorlagen sind bewusst neutral formuliert, damit keine Gesundheitsdaten im öffentlichen Titel landen (z. B. „Begleitung zu einem Termin“ statt „zum Arzt“). Details gehören in den Chat nach dem Match.
+
+| Kategorie | Textvorlagen (Auswahl) |
+|---|---|
+| Einkauf & Besorgung | Einkauf erledigen · Apotheke abholen · Paket abholen oder zur Post bringen |
+| Tragen & Transport | Getränkekisten tragen · Möbel tragen · Etwas mit dem Auto transportieren |
+| Technik | Handy oder Tablet einrichten · Fernseher einstellen · Drucker einrichten · Videoanruf erklären |
+| Haus & Garten | Pflanzen gießen · Briefkasten leeren · Kleine Reparatur · Laub oder Schnee räumen |
+| Zeit & Gesellschaft | Vorlesen · Spaziergang · Gesellschaft leisten · Gemeinsam Kaffee trinken |
+| Begleitung | Begleitung zu einem Termin · Begleitung zum Einkaufen |
+| Tiere | Gassi gehen · Haustier füttern |
+| Werkzeug & Leihen | Bohrmaschine leihen · Leiter leihen |
+| Sonstiges | Freitext |
+
+Dieselben Kategorien und Vorlagen gelten für Angebote (5.7).
+
+### 5.11 Abschluss und Bewertung (Entscheidung 13.11.2026)
+1. Die helfende Person tippt „Hilfe erledigt“ (optional, startet die 24-Stunden-Frist).
+2. Die hilfesuchende Seite (oder Angehörige bzw. Träger bei Vertretung) **bestätigt die Zeit** aus der Anfrage oder passt sie an.
+3. Sie **bewertet die helfende Person**: 1 bis 5 Sterne plus optionaler Freitext (wie bei Uber).
+4. Sie markiert die Hilfe als **erledigt**. Erst dann gibt es Punkte.
+- **Ohne Rückmeldung innerhalb von 24 Stunden** gilt die zuvor angegebene Zeit, die Hilfe wird abgeschlossen und die Punkte werden gutgeschrieben, sofern keine Meldung (Beschwerde) vorliegt.
+- **Automatische Bewertung: offen**, siehe Abwägung im Gespräch vom 13.11.2026. Vorschlag: keine automatischen Sterne, sondern „ohne Bewertung“; der Sterne-Durchschnitt zählt nur echte Bewertungen.
+- Profil der helfenden Person: Durchschnitt, Anzahl Bewertungen, die letzten Freitexte. Bewertungen unter 3 Sternen gehen zusätzlich an die Moderation.
+- Helfende können ihrerseits ein nicht öffentliches Feedback oder eine Meldung zur hilfesuchenden Person abgeben (Schutz der Helfenden).
+
+### 5.12 Sicherheit und Recht: Pflichtpunkte vor Phase 2
+- **Melde- und Abhilfeverfahren** (Digital Services Act, gilt auch für kleine Anbieter): Meldefunktion an Profilen, Anfragen, Chats und Bewertungen; dokumentierte Bearbeitung; Begründung bei Sperren; Kontaktstelle; Weitergabe an Behörden bei Verdacht auf Straftaten gegen Leib und Leben.
+- **Schutzregeln für Hilfen:** Keine Bankkarten oder PINs übergeben, Einkäufe nur mit Quittung, keine Geldgeschäfte zwischen Nutzern, Hilfe ist unentgeltlich (höchstens Auslagen). Hausschlüssel und Wohnungszutritt nur bei Helfenden ab Stufe 2. Sicherheitshinweise vor dem ersten Treffen.
+- **Keine Angriffsfläche für Betrug:** Karten zeigen nie Alter, „lebt allein“, Pflegebedarf oder genaue Adresse. Die anfragende Seite wählt aus, wer helfen darf; die Adresse gibt es erst dann.
+- **Datenschutz:** Standortdaten, Daten älterer und vertretener Personen, mögliche Gesundheitsbezüge (besondere Kategorie nach DSGVO). Vor dem Start: Datenschutzerklärung, Einwilligungen, Auftragsverarbeitungsverträge, voraussichtlich Datenschutz-Folgenabschätzung.
+- **Nutzungsbedingungen:** Karma vermittelt, ist nicht Vertragspartner der Hilfe; Regeln, Sperrgründe, ab 18 Jahren.
+- **Versicherung:** Betriebshaftpflicht und Cyber für Karma; Klärung Sammelversicherung des Landes für Helfende.
+- **Einmalige anwaltliche Prüfung** von Nutzungsbedingungen, Datenschutz und Bewertungssystem vor dem Start von Phase 2.
