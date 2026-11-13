@@ -249,6 +249,11 @@ Ziel: niedrige Einstiegshürde für Helfende, mehr Sicherheit dort, wo es nötig
 - Schritt 2: **Textvorlage** antippen, die als Titel übernommen wird. Optional Freitext ergänzen oder ganz eigenen Text schreiben.
 - Schritt 3: **Zeitaufwand** angeben (Pflicht): 15, 30, 45, 60, 90 oder 120 Minuten.
 - Schritt 4: Wann (jetzt, heute, Datum), wo (vor Ort oder per Telefon/Video), einmalig oder wiederkehrend.
+- Schritt 5: **Anzahl Helfende** (Standard: 1, frei erhöhbar, z. B. 8 für eine Aufräumaktion). Entscheidung 13.11.2026.
+  - Die Karte zeigt den Stand, z. B. „3 von 8 Plätzen belegt“. Sobald alle Plätze vergeben sind, verschwindet sie aus dem Feed.
+  - Bei 1 Person wählt die anfragende Seite wie gewohnt aus, wer hilft. Ab 2 Personen kann sie zusätzlich „Zusagen automatisch annehmen“ einschalten, damit eine Aktion nicht an der Auswahl hängt.
+  - Ab 2 Personen gibt es einen gemeinsamen Gruppenchat.
+  - Abschluss: Die anfragende Seite bestätigt die Zeit einmal für alle und kann einzelne Personen abwählen, die nicht da waren. Jede helfende Person bekommt ihre Punkte und kann einzeln bewertet werden.
 - Vorlagen sind bewusst neutral formuliert, damit keine Gesundheitsdaten im öffentlichen Titel landen (z. B. „Begleitung zu einem Termin“ statt „zum Arzt“). Details gehören in den Chat nach dem Match.
 
 | Kategorie | Textvorlagen (Auswahl) |
