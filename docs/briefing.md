@@ -297,6 +297,6 @@ Dieselben Kategorien und Vorlagen gelten für Angebote (5.7).
 
 **Nie im Profil:** genaue Adresse, Telefonnummer, voller Nachname, Geburtsdatum, Angaben zur Gesundheit.
 
-Hinweis: Wer eine Anfrage für einen Besuch zu Hause stellt, kann optional festlegen, dass nur Frauen oder nur Männer zusagen können (Sicherheitsbedürfnis vieler älterer Frauen). Dafür muss das Geschlecht im Profil angegeben sein; ohne Angabe sieht man solche Anfragen nicht.
+**Geschlecht bei der Anfrage** (Entscheidung 13.11.2026): Jede Anfrage hat das Feld „Wer darf helfen?“ mit „egal“ (Standard), „nur Frauen“ oder „nur Männer“. Wer nicht passt, bekommt die Anfrage gar nicht erst angezeigt, auch Personen ohne Angabe zum Geschlecht nicht.
 
 **Auswertung im Test:** Hilfen für Einrichtungen und für Privatpersonen werden getrennt ausgewertet.
