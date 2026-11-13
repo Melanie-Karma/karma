@@ -62,7 +62,7 @@ Bevor der Swipe-Feed für eine Zone live geht, sammelt die App kritische Masse p
 ### Phase 2: Die Core-App (Swipe-Radar, Match-Chat & Karma-System)
 Sobald eine Zone freigeschaltet ist (oder für Beta-Tester), greift die Haupt-App:
 - **Onboarding (30 Sek.):** Name/Nickname, Profilfoto, optional Skill-/Werkzeug-Tags (`Auto/Transporter`, `Werkzeug/Bohrmaschine`, `Tragehilfe`, `Einkauf`, `Technik`, `Hund/Tier`).
-- **Home / Swipe-Deck:** Kartenansicht offener Anfragen im gewählten Radius (Slider 500 m bis 5 km), sortiert nach Dringlichkeit und Entfernung.
+- **Home / Swipe-Deck:** Kartenansicht offener Anfragen im gewählten Umkreis, sortiert nach Dringlichkeit und Entfernung. Umkreis wählbar 2, 5, 10 oder 20 km, Standard 10 km (Entscheidung 13.11.2026: Kleinstadt plus Ortsteile wie Trebbin braucht mehr als 5 km, sonst bleibt der Feed im Test leer; nebenan.de fasst „Trebbin & Umgebung“ ähnlich weit). Für Großstädte wie Potsdam später eher 2 bis 5 km als Standard. Hilfe per Telefon oder Video hat keinen Umkreis.
   - Non-Profit-Karten: goldener/grüner Rahmen, Herz-Badge mit Organisationsname.
   - Top-Helfer-Karten: Badge "Top-Helfer sucht Hilfe".
 - **Ticket erstellen (+ Button):** Kategorie wählen, Kurztitel (max. 80 Zeichen), Zeitfenster (`Jetzt sofort`, `Heute`, `Morgen`, `Datum wählen`), geschätzter Zeitaufwand (`15 Min`, `30 Min`, `1 Std+`).

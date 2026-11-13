@@ -1,9 +1,11 @@
 import Link from "next/link";
+import LegalFooter from "@/components/LegalFooter";
 
 export const metadata = { title: "Impressum · Karma" };
 
 export default function Page() {
   return (
+    <>
     <main className="mx-auto max-w-xl px-5 py-10">
       <Link href="/" className="text-sm underline underline-offset-4">
         Zurück
@@ -15,5 +17,7 @@ export default function Page() {
         Platzhalter. Dieser Text muss vor dem Start ersetzt werden.
       </p>
     </main>
+    <LegalFooter />
+    </>
   );
 }

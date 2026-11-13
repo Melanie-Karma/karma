@@ -2,14 +2,13 @@ import { jsPDF } from "jspdf";
 import QRCode from "qrcode";
 
 export type FlyerInput = {
-  zoneName: string;
+  /** Ort der Testphase, z. B. "Trebbin" */
+  place: string;
   inviteUrl: string;
-  /** Wie viele Helfer noch bis zum Unlock fehlen (0 = schon freigeschaltet). */
-  missing: number;
 };
 
 /** A4-Aushang für Hausflur oder Schwarzes Brett, mit persönlichem QR-Code. */
-export async function buildFlyer({ zoneName, inviteUrl, missing }: FlyerInput): Promise<jsPDF> {
+export async function buildFlyer({ place, inviteUrl }: FlyerInput): Promise<jsPDF> {
   const qr = await QRCode.toDataURL(inviteUrl, {
     errorCorrectionLevel: "M",
     margin: 0,
@@ -40,7 +39,7 @@ export async function buildFlyer({ zoneName, inviteUrl, missing }: FlyerInput): 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(13);
   doc.setTextColor(255, 255, 255);
-  doc.text("Schnelle Nachbarschaftshilfe per Swipe. Ohne Feed, ohne Tratsch.", 20, 101);
+  doc.text("Nachbarschaftshilfe per Swipe. Ohne Geld, ohne Tratsch.", 20, 101);
 
   // QR-Code
   const size = 92;
@@ -59,10 +58,7 @@ export async function buildFlyer({ zoneName, inviteUrl, missing }: FlyerInput): 
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(13);
-  const line =
-    missing > 0
-      ? `Noch ${missing} Helfer, dann startet Karma hier: ${zoneName}`
-      : `Karma ist hier schon gestartet: ${zoneName}`;
+  const line = `Testphase in ${place}: Mach mit und hilf uns, Karma besser zu machen.`;
   doc.text(doc.splitTextToSize(line, 170), W / 2, 254, { align: "center" });
 
   doc.setFontSize(10);

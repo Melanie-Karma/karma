@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type") as EmailOtpType | null;
 
   // Nur interne Ziele zulassen (kein Open Redirect)
-  const requested = searchParams.get("next") ?? "/dashboard";
-  const next = requested.startsWith("/") && !requested.startsWith("//") ? requested : "/dashboard";
+  const requested = searchParams.get("next") ?? "/app";
+  const next = requested.startsWith("/") && !requested.startsWith("//") ? requested : "/app";
 
   const cookieStore = await cookies();
   const supabase = createServerClient(

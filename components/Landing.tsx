@@ -1,323 +1,219 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import ZoneProgress from "@/components/ZoneProgress";
+import LegalFooter from "@/components/LegalFooter";
+import { btn, input } from "@/components/ui";
 import { ANIMALS } from "@/lib/animals";
 import { getSupabase } from "@/lib/supabase";
-import { REF_STORAGE_KEY, REFERRALS_FOR_FOUNDER } from "@/lib/types";
-import { useZones } from "@/lib/useZones";
 
-type FormState = "idle" | "sending" | "sent";
+type Step = "email" | "code";
 
-const STEPS = [
-  {
-    emoji: "🙋",
-    title: "Hilfe anfragen",
-    text: "In 30 Sekunden: Was brauchst du, wann und wie lange ungefähr?",
-  },
-  {
-    emoji: "👉",
-    title: "Nach rechts wischen",
-    text: "Leute in deiner Nähe sehen die Anfrage als Karte. Rechts heißt: Ich helfe.",
-  },
-  {
-    emoji: "✨",
-    title: "Karma sammeln",
-    text: "Für jede Hilfe gibt es Punkte, und dein Tier entwickelt sich weiter.",
-  },
+const EXAMPLES = [
+  { emoji: "📱", text: "Handy einrichten", meta: "30 Min. · 400 m" },
+  { emoji: "🐕", text: "Gassi gehen mit Bruno", meta: "45 Min. · 1,2 km" },
+  { emoji: "☕", text: "Vorlesen am Nachmittag", meta: "60 Min. · jede Woche" },
 ];
 
 export default function Landing() {
-  const { zones, error: zonesError } = useZones();
-  const [slug, setSlug] = useState<string | null>(null);
+  const router = useRouter();
+  const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
-  const [formState, setFormState] = useState<FormState>("idle");
+  const [firstName, setFirstName] = useState("");
+  const [code, setCode] = useState("");
+  const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
-  const [invited, setInvited] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
-  // Einladungscode und vorgewählte Zone aus dem Link übernehmen
   useEffect(() => {
-    // Browser-Werte (URL, localStorage, navigator) erst nach dem Hydrieren lesen,
-    // sonst weicht das vorgerenderte HTML vom Client ab.
-    /* eslint-disable react-hooks/set-state-in-effect */
     const params = new URLSearchParams(window.location.search);
-
-    const ref = params.get("ref");
-    if (ref && /^[a-z0-9]{6,12}$/i.test(ref)) {
-      try {
-        localStorage.setItem(REF_STORAGE_KEY, ref.toLowerCase());
-      } catch {
-        /* privater Modus: dann eben ohne Einladungscode */
-      }
-      setInvited(true);
+    if (params.get("fehler") === "link") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- URL gibt es erst im Browser
+      setNotice("Der Link war abgelaufen oder schon benutzt. Hol dir einfach einen neuen.");
     }
+    if (params.get("login")) formRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Schon angemeldet? Dann direkt in die App
+    void getSupabase()
+      .auth.getSession()
+      .then(({ data }) => {
+        if (data.session) router.replace("/app");
+      });
+  }, [router]);
 
-    const zone = params.get("zone");
-    if (zone) setSlug(zone);
-
-    if (params.get("fehler")) {
-      setNotice("Der Link ist abgelaufen oder wurde schon benutzt. Fordere einfach einen neuen an.");
-    }
-
-    try {
-      getSupabase()
-        .auth.getSession()
-        .then(({ data }) => setLoggedIn(Boolean(data.session)));
-    } catch {
-      /* Konfiguration fehlt: useZones zeigt die Meldung */
-    }
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
-
-  const selected = zones?.find((z) => z.slug === slug) ?? null;
-
-  async function onSubmit(event: FormEvent) {
-    event.preventDefault();
-    if (!selected || formState === "sending") return;
-    setFormState("sending");
+  async function sendLink(e: FormEvent) {
+    e.preventDefault();
+    setBusy(true);
     setNotice(null);
-
-    let ref: string | null = null;
-    try {
-      ref = localStorage.getItem(REF_STORAGE_KEY);
-    } catch {
-      /* ignorieren */
-    }
-
     const { error } = await getSupabase().auth.signInWithOtp({
       email: email.trim(),
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm?next=/dashboard`,
-        // Wird beim Bestätigen der Mail vom DB-Trigger handle_new_user gelesen
-        data: { zone_slug: selected.slug, ...(ref ? { ref } : {}) },
+        emailRedirectTo: `${window.location.origin}/auth/confirm?next=/app`,
+        data: firstName.trim() ? { first_name: firstName.trim() } : undefined,
       },
     });
-
+    setBusy(false);
     if (error) {
-      setFormState("idle");
       setNotice(
         error.status === 429
-          ? "Gerade melden sich sehr viele an. Probier es in einer Minute nochmal."
-          : "Das hat nicht geklappt. Prüf bitte deine E-Mail-Adresse.",
+          ? "Zu viele Versuche. Bitte warte eine Minute."
+          : "Das hat nicht geklappt. Stimmt die E-Mail-Adresse?",
       );
       return;
     }
-    setFormState("sent");
+    setStep("code");
+  }
+
+  async function verifyCode(e: FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setNotice(null);
+    const { error } = await getSupabase().auth.verifyOtp({
+      email: email.trim(),
+      token: code.replace(/\s/g, ""),
+      type: "email",
+    });
+    setBusy(false);
+    if (error) {
+      setNotice("Der Code passt nicht oder ist abgelaufen.");
+      return;
+    }
+    router.replace("/app");
   }
 
   return (
-    <main>
-      {/* Hero */}
-      <section className="rounded-b-[2.5rem] bg-forest px-5 pb-12 pt-5 text-white">
-        <div className="mx-auto max-w-xl">
-          <header className="flex items-center justify-between">
-            <span className="rounded-full bg-lime px-4 py-1.5 text-sm font-extrabold tracking-wide text-ink">
-              KARMA
-            </span>
-            {loggedIn && (
-              <Link href="/dashboard" className="text-sm font-semibold underline underline-offset-4">
-                Mein Karma
-              </Link>
-            )}
-          </header>
+    <>
+      <main className="mx-auto max-w-xl px-5">
+        <header className="flex items-center justify-between py-5">
+          <span className="rounded-full bg-forest px-3 py-1 text-sm font-extrabold tracking-wide text-lime">
+            KARMA
+          </span>
+          <span className="text-sm font-bold text-muted">Testphase Trebbin</span>
+        </header>
 
-          <div className="mt-10 flex items-end justify-between gap-4">
-            <h1 className="text-[2.6rem] font-extrabold leading-[1.05] tracking-tight">
-              Schalte deinen <span className="text-lime">Kiez</span> frei.
-            </h1>
-            <span className="animate-float select-none text-6xl" aria-hidden>
-              🦋
-            </span>
-          </div>
-          <p className="mt-5 text-lg leading-relaxed text-white/85">
-            Karma ist schnelle Nachbarschaftshilfe per Swipe. Jemand braucht kurz eine Bohrmaschine
-            oder zwei Hände, du wischst nach rechts und hilfst. Kein Feed, kein Tratsch.
+        <section className="pt-6 pb-10">
+          <h1 className="text-[2.6rem] leading-[1.05] font-extrabold tracking-tight text-forest">
+            Kurz mal Hilfe gebraucht?
+            <br />
+            <span className="bg-lime px-1 text-ink">Oder 15 Minuten Zeit?</span>
+          </h1>
+          <p className="mt-5 text-lg text-ink/80">
+            Karma bringt Nachbarn zusammen. Du fragst an, was du brauchst. Wer in der Nähe Zeit hat,
+            wischt nach rechts und hilft. Ohne Geld, ohne Tratsch.
           </p>
-          <p className="mt-3 font-semibold text-lime">
-            Sobald genug Leute dabei sind, geht deine Zone live.
-          </p>
-        </div>
-      </section>
-
-      <div className="mx-auto max-w-xl px-5">
-        {invited && (
-          <p className="mt-6 rounded-2xl bg-lime px-4 py-3 font-semibold">
-            🎟️ Du wurdest eingeladen. Deine Anmeldung zählt doppelt: für deine Zone und für die
-            Person, die dich eingeladen hat.
-          </p>
-        )}
-
-        {/* Zonenwahl mit Live-Counter */}
-        <section className="mt-8" aria-labelledby="zonen">
-          <h2 id="zonen" className="text-xl font-extrabold">
-            1. Wo bist du unterwegs?
-          </h2>
-
-          {zonesError && (
-            <p role="alert" className="mt-3 rounded-2xl bg-red-100 px-4 py-3 text-red-900">
-              {zonesError}
-            </p>
-          )}
-          {!zones && !zonesError && (
-            <div className="mt-3 space-y-3" aria-hidden>
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="h-24 animate-pulse rounded-3xl bg-ink/5" />
-              ))}
-            </div>
-          )}
-
-          <div role="radiogroup" aria-labelledby="zonen" className="mt-3 space-y-3">
-            {zones?.map((zone) => {
-              const active = zone.slug === slug;
-              return (
-                <button
-                  key={zone.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={active}
-                  onClick={() => {
-                    setSlug(zone.slug);
-                    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  }}
-                  className={`block w-full rounded-3xl border-2 p-4 text-left transition ${
-                    active
-                      ? "border-forest bg-white shadow-[0_6px_0_0_var(--color-forest)]"
-                      : "border-ink/10 bg-white/60 hover:border-ink/30"
-                  }`}
-                >
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <span className="font-bold">{zone.name}</span>
-                    <span
-                      className={`grid size-6 place-items-center rounded-full border-2 text-xs ${
-                        active ? "border-forest bg-forest text-lime" : "border-ink/20"
-                      }`}
-                      aria-hidden
-                    >
-                      {active ? "✓" : ""}
-                    </span>
-                  </div>
-                  <ZoneProgress zone={zone} />
-                </button>
-              );
-            })}
+          <div className="mt-7 flex flex-wrap gap-3">
+            <button
+              type="button"
+              className={btn.primary}
+              onClick={() => formRef.current?.scrollIntoView({ behavior: "smooth" })}
+            >
+              Mitmachen
+            </button>
+            <Link href="/regeln" className={btn.ghost}>
+              Die Regeln
+            </Link>
           </div>
         </section>
 
-        {/* Anmeldung */}
-        <section className="mt-8" aria-labelledby="anmelden">
-          <h2 id="anmelden" className="text-xl font-extrabold">
-            2. Platz sichern
-          </h2>
-
-          {formState === "sent" ? (
-            <div className="mt-3 rounded-3xl bg-forest p-5 text-white" role="status">
-              <p className="text-2xl font-extrabold">📬 Schau in dein Postfach</p>
-              <p className="mt-2 text-white/85">
-                Wir haben dir einen Link an <strong>{email.trim()}</strong> geschickt. Ein Klick,
-                und du bist für {selected?.name} dabei. Danach bekommst du deinen Einladungslink
-                und deinen Aushang.
-              </p>
-              <button
-                type="button"
-                onClick={() => setFormState("idle")}
-                className="mt-4 text-sm font-semibold text-lime underline underline-offset-4"
-              >
-                Andere Adresse verwenden
-              </button>
+        <section aria-label="Beispiele" className="relative -mx-1 mb-12 space-y-3">
+          {EXAMPLES.map((ex, i) => (
+            <div
+              key={ex.text}
+              className="flex items-center gap-4 rounded-3xl bg-white p-4 shadow-[0_1px_0_rgba(20,32,26,.08)]"
+              style={{ transform: `rotate(${[-1.2, 0.8, -0.4][i]}deg)` }}
+            >
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-paper text-2xl">{ex.emoji}</span>
+              <div className="flex-1">
+                <p className="font-extrabold">{ex.text}</p>
+                <p className="text-sm text-muted">{ex.meta}</p>
+              </div>
+              <span className="rounded-full bg-lime px-3 py-1 text-sm font-extrabold">Ich helfe →</span>
             </div>
-          ) : (
-            <form ref={formRef} onSubmit={onSubmit} className="mt-3 space-y-3">
+          ))}
+        </section>
+
+        <section className="mb-12 rounded-[2rem] bg-forest p-6 text-paper">
+          <h2 className="text-2xl font-extrabold">Jede Hilfe zählt gleich viel</h2>
+          <p className="mt-2 text-paper/80">
+            Pro angefangene Viertelstunde gibt es 10 Karma. Dein Tier wächst mit, von der Amöbe bis
+            zum Phönix. Es fällt nie zurück, aber ohne Hilfe wird es mit der Zeit blass und müde.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2 text-2xl" aria-label="Die sieben Tiere">
+            {ANIMALS.map((a) => (
+              <span key={a.stage} title={a.name} className="grid h-11 w-11 place-items-center rounded-full bg-paper/10">
+                {a.emoji}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <section ref={formRef} id="mitmachen" className="mb-6 scroll-mt-6 rounded-[2rem] bg-lime p-6">
+          {step === "email" ? (
+            <form onSubmit={sendLink} className="space-y-3">
+              <h2 className="text-2xl font-extrabold">Mach mit</h2>
+              <p className="text-ink/80">Wir schicken dir einen Anmeldelink und einen Code. Kein Passwort nötig.</p>
               <label className="block">
-                <span className="sr-only">E-Mail-Adresse</span>
+                <span className="mb-1 block text-sm font-bold">Vorname</span>
                 <input
-                  type="email"
-                  required
-                  autoComplete="email"
-                  inputMode="email"
-                  placeholder="deine@mail.de"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-2xl border-2 border-ink/15 bg-white px-4 py-4 text-lg outline-none focus:border-forest"
+                  className={input}
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  autoComplete="given-name"
+                  maxLength={30}
+                  placeholder="z. B. Melanie"
                 />
               </label>
-              <button
-                type="submit"
-                disabled={!selected || formState === "sending"}
-                className="w-full rounded-2xl bg-lime px-4 py-4 text-lg font-extrabold shadow-[0_5px_0_0_var(--color-ink)] transition active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:shadow-none"
-              >
-                {formState === "sending"
-                  ? "Wird gesendet …"
-                  : selected
-                    ? `Dabei sein: ${selected.name}`
-                    : "Erst oben eine Zone wählen"}
+              <label className="block">
+                <span className="mb-1 block text-sm font-bold">E-Mail</span>
+                <input
+                  className={input}
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  inputMode="email"
+                  placeholder="du@beispiel.de"
+                />
+              </label>
+              <button className={`${btn.primary} w-full`} disabled={busy || !email}>
+                {busy ? "Wird gesendet …" : "Anmeldelink schicken"}
               </button>
-              {notice && (
-                <p role="alert" className="rounded-2xl bg-red-100 px-4 py-3 text-red-900">
-                  {notice}
-                </p>
-              )}
-              <p className="text-sm text-muted">
-                Kein Passwort nötig. Mit der Anmeldung akzeptierst du die{" "}
-                <Link href="/datenschutz" className="underline underline-offset-4">
-                  Datenschutzerklärung
-                </Link>
-                .
+              <p className="text-xs text-ink/70">
+                Schon dabei? Einfach E-Mail eingeben, der Vorname bleibt dann wie er ist.
               </p>
             </form>
+          ) : (
+            <form onSubmit={verifyCode} className="space-y-3">
+              <h2 className="text-2xl font-extrabold">Schau in dein Postfach</h2>
+              <p className="text-ink/80">
+                Tipp auf den Link in der Mail an <b>{email}</b>. Oder gib hier den Code aus der Mail ein.
+              </p>
+              <input
+                className={`${input} text-center text-2xl tracking-[.4em]`}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                placeholder="123456"
+                maxLength={10}
+              />
+              <button className={`${btn.primary} w-full`} disabled={busy || code.replace(/\s/g, "").length < 6}>
+                {busy ? "Prüfe …" : "Anmelden"}
+              </button>
+              <button type="button" className="w-full text-sm underline" onClick={() => setStep("email")}>
+                Andere E-Mail verwenden
+              </button>
+            </form>
+          )}
+          {notice && (
+            <p role="alert" className="mt-3 rounded-2xl bg-white/70 p-3 text-sm font-bold">
+              {notice}
+            </p>
           )}
         </section>
-
-        {/* Incentive */}
-        <section className="mt-10 rounded-3xl bg-white p-5">
-          <p className="text-sm font-bold uppercase tracking-wider text-muted">Gründer-Bonus</p>
-          <h2 className="mt-1 text-2xl font-extrabold leading-tight">
-            Lade {REFERRALS_FOR_FOUNDER} Leute ein und überspring die Amöbe.
-          </h2>
-          <p className="mt-2 text-muted">
-            Dann startest du zum Launch direkt als Schmetterling mit Gründer-Aura. Nach der
-            Anmeldung bekommst du deinen Link und einen fertigen Aushang für Hausflur oder
-            Schwarzes Brett.
-          </p>
-          <ol className="mt-5 flex items-center justify-between" aria-label="Tier-Evolution">
-            {ANIMALS.map((a) => (
-              <li
-                key={a.stage}
-                title={`Stufe ${a.stage}: ${a.name}`}
-                className={`grid size-10 place-items-center rounded-full text-xl ${
-                  a.stage === 4 ? "bg-lime ring-4 ring-lime/40" : "bg-paper"
-                }`}
-              >
-                <span role="img" aria-label={a.name}>
-                  {a.emoji}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* So funktioniert es */}
-        <section className="mt-10" aria-labelledby="ablauf">
-          <h2 id="ablauf" className="text-xl font-extrabold">
-            So läuft es nach dem Start
-          </h2>
-          <ol className="mt-3 space-y-3">
-            {STEPS.map((step) => (
-              <li key={step.title} className="flex gap-4 rounded-3xl bg-white p-4">
-                <span className="text-3xl" aria-hidden>
-                  {step.emoji}
-                </span>
-                <div>
-                  <h3 className="font-bold">{step.title}</h3>
-                  <p className="text-muted">{step.text}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </div>
-    </main>
+      </main>
+      <LegalFooter />
+    </>
   );
 }
