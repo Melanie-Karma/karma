@@ -181,7 +181,7 @@ Umgesetzt in `supabase/migrations/` (Basis + Delta vom 12.11.2026), inkl. Row Le
 ### 5.2 Einsamkeit als eigener Schwerpunkt
 - Neue Kategorie **„Zeit & Gesellschaft“**: Vorlesen, Spaziergang, Gesellschaft leisten, gemeinsam einkaufen gehen.
 - Kategorie **„Technik“** ausdrücklich mit Beispielen: Fernseher, Drucker, Handy oder Tablet einrichten.
-- Kategorie **„Haus & Garten“**: Pflanzen gießen im Beisein, kleine Handgriffe. Keine Aufgaben, die einen Schlüssel erfordern (Briefkasten leeren, Blumen gießen im Urlaub).
+- Kategorie **„Haus & Garten“**: Pflanzen gießen, Briefkasten leeren, kleine Handgriffe. Schlüsselabsprachen klären die Beteiligten selbst (siehe 5.12).
 - **Wiederkehrende Hilfe (Patenschaft):** Eine Anfrage kann sich wöchentlich wiederholen und bevorzugt an dieselbe helfende Person gehen. Einsamkeit lindert man durch feste Kontakte, nicht durch wechselnde.
 - Wiederkehrende Hilfe zählt immer voll (es gibt keine Abwertung mehr, siehe 5.9).
 - Einordnung: platoniq ist als Präventionskurs nach § 20 SGB V zertifiziert und wird von Krankenkassen erstattet. Das ist ein psychologisches Kursprogramm, kein Wettbewerber, aber ein Beleg dafür, dass Kassen Einsamkeit als Gesundheitsthema finanzieren. Möglicher späterer Finanzierungsweg für Karma: Pflegekassen über den Entlastungsbetrag und die Brandenburger Anerkennung von Nachbarschaftshilfe (vor Umsetzung rechtlich prüfen).
@@ -256,10 +256,10 @@ Ziel: niedrige Einstiegshürde für Helfende, mehr Sicherheit dort, wo es nötig
 | Einkauf & Besorgung | Einkauf erledigen · Apotheke abholen · Paket abholen oder zur Post bringen |
 | Tragen & Transport | Getränkekisten tragen · Möbel tragen · Etwas mit dem Auto transportieren |
 | Technik | Handy oder Tablet einrichten · Fernseher einstellen · Drucker einrichten · Videoanruf erklären |
-| Haus & Garten | Pflanzen gießen (im Beisein) · Kleine Reparatur · Laub oder Schnee räumen |
+| Haus & Garten | Pflanzen gießen · Briefkasten leeren · Kleine Reparatur · Laub oder Schnee räumen |
 | Zeit & Gesellschaft | Vorlesen · Spaziergang · Gesellschaft leisten · Gemeinsam Kaffee trinken |
 | Begleitung | Begleitung zu einem Termin · Begleitung zum Einkaufen |
-| Tiere | Gassi gehen (Übergabe des Hundes vor Ort) |
+| Tiere | Gassi gehen · Haustier füttern |
 | Werkzeug & Leihen | Bohrmaschine leihen · Leiter leihen |
 | Sonstiges | Freitext |
 
@@ -277,7 +277,7 @@ Dieselben Kategorien und Vorlagen gelten für Angebote (5.7).
 
 ### 5.12 Sicherheit und Recht: Pflichtpunkte vor Phase 2
 - **Melde- und Abhilfeverfahren** (Pflicht ab Release 1, Entscheidung 13.11.2026; Digital Services Act, gilt auch für kleine Anbieter): Meldefunktion an Profilen, Anfragen, Chats und Bewertungen; dokumentierte Bearbeitung; Begründung bei Sperren; Kontaktstelle; Weitergabe an Behörden bei Verdacht auf Straftaten gegen Leib und Leben.
-- **Schutzregeln für Hilfen:** Keine Bankkarten oder PINs übergeben, Einkäufe nur mit Quittung. **Keine Schlüsselübergabe über Karma**, auch nicht an bestätigte Helfende: Hilfen, die einen Schlüssel erfordern, sind ausgeschlossen (Regel in den Nutzungsbedingungen). Sicherheitshinweise vor dem ersten Treffen.
+- **Schutzregeln für Hilfen:** Keine Bankkarten oder PINs übergeben, Einkäufe nur mit Quittung. **Schlüssel (Entscheidung 13.11.2026):** Karma vermittelt und prüft keine Schlüsselübergaben. Ob jemand einen Schlüssel übergibt (Briefkasten, Wohnung für Haustier oder Pflanzen), klären die Beteiligten untereinander in eigener Verantwortung. Die App zeigt bei solchen Vorlagen einen Sicherheitshinweis, und die anfragende Seite kann eine Mindeststufe für Helfende festlegen. Regel und Haftungsausschluss stehen in den Nutzungsbedingungen. Ab dem Pilot mit dem ersten Träger kommt eine **Schlüssel-Stufe** dazu: Stufe 2, vom Träger geprüftes Führungszeugnis (Karma speichert nur „geprüft am, von“), mindestens 3 Hilfen ohne Schlüssel bei derselben Person und ausdrückliche Freigabe durch Person oder Angehörige. Alternative Empfehlung in der App: Schlüsseltresor mit Code, der nach der Hilfe geändert wird. Sicherheitshinweise vor dem ersten Treffen.
 - **Kein Geld über Karma** (Entscheidung 13.11.2026): Karma wickelt keine Zahlungen ab und vermittelt keine bezahlten Leistungen. Hilfe ist unentgeltlich; ob Auslagen erstattet werden, ist Sache der Beteiligten und nicht Teil der Plattform.
 - **Keine Angriffsfläche für Betrug:** Karten zeigen nie Alter, „lebt allein“, Pflegebedarf oder genaue Adresse. Die anfragende Seite wählt aus, wer helfen darf; die Adresse gibt es erst dann.
 - **Datenschutz:** Standortdaten, Daten älterer und vertretener Personen, mögliche Gesundheitsbezüge (besondere Kategorie nach DSGVO). Vor dem Start: Datenschutzerklärung, Einwilligungen, Auftragsverarbeitungsverträge, voraussichtlich Datenschutz-Folgenabschätzung.
