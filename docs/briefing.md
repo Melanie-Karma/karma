@@ -1,6 +1,6 @@
 # Projekt-Briefing: "Karma" · Gamifizierte hyperlokale Nachbarschaftshilfe (PWA / Mobile App)
 
-Stand: 13.11.2026 · ergänzt um Non-Profit-Partner, Bumerang-Effekt, Sammel-Badges sowie Abschnitt 5 (Anforderungen vom 13.11.2026)
+Stand: 13.11.2026 · ergänzt um Non-Profit-Partner, Bumerang-Effekt, Sammel-Badges sowie Abschnitt 5 (Anforderungen vom 13.11.2026, zweite Runde: keine Abwertung, Hilfsangebote, Familienfreigabe)
 
 ## 1. Produktvision & Kernkonzept
 "Karma" ist ein gamifiziertes Echtzeit-Hilfesystem für Nachbarschaften, Bezirke und Uni-Campus-Umgebungen ("Tinder meets Uber für schnelle Alltagshilfe").
@@ -16,7 +16,7 @@ Im Gegensatz zu klassischen Nachbarschafts-Foren (wie nebenan.de) gibt es keinen
    - Jede erfolgreich geleistete Hilfe bringt Karma-Punkte und lässt den persönlichen Tier-Avatar evolvieren:
      `Stufe 1: Amöbe` → `Stufe 2: Ameise` → `Stufe 3: Regenwurm` → `Stufe 4: Schmetterling` → `Stufe 5: Singvogel` → `Stufe 6: Falke` → `Stufe 7: Adler / Phönix`.
    - **Schutz vor De-Evolutions-Frust:** Das erreichte Basistier bleibt dauerhaft erhalten. Bei Inaktivität (mehr als 14 Tage ohne Hilfe) verliert das Tier seinen "Energie-/Aura-Status" (wird müde/grau) und strahlt sofort wieder nach der nächsten Hilfe.
-   - **Anti-Cheat:** Wiederholte Hilfen für dieselbe Privatperson innerhalb von 7 Tagen geben stark reduzierte Punkte (Diminishing Returns). Ausnahme: verifizierte Non-Profits (siehe 1.6).
+   - **Keine Abwertung:** Hilfe ist Hilfe. Wiederholte Hilfe für dieselbe Person zählt voll. Punkte richten sich nur nach der bestätigten Dauer (siehe 5.9).
 5. **Social-Share-Loop (Viralität):** Nach jeder abgeschlossenen Hilfe oder Tier-Evolution generiert die App eine visuelle "Share-Card" (9:16 für Instagram Stories & TikTok) mit Tier-Avatar, erledigter Aufgabe, Bezirk/Campus und persönlichem Einladungs-QR-Code.
    - Bei Hilfen für Privatpersonen zeigt die Karte nur die **Kategorie** (z. B. "Tragehilfe"), nie den Titel der Anfrage. Ein Titel wie "Begleitung zum Arzt" plus Bezirk wäre öffentlich ein Datenschutzproblem für die Person, der geholfen wurde.
    - Bei Non-Profit-Hilfen zeigt die Karte Titel und Organisations-Badge prominent (siehe 1.6).
@@ -27,7 +27,6 @@ Im Gegensatz zu klassischen Nachbarschafts-Foren (wie nebenan.de) gibt es keinen
 - **Kategorie:** Jede Organisation erhält eine Kategorie: `animal_welfare` (Tierheim, Tierschutz), `social` (Tafel, Obdachlosenhilfe, Kältebus) oder `other`. Die Kategorie entscheidet, welches Sammel-Badge eine Hilfe zählt.
 - **Swipe-Deck-Darstellung:** Karten von Non-Profits erhalten einen dezenten goldenen/grünen Rahmen, das Herz-Badge mit Organisationsnamen und den Hinweis "2x Karma".
 - **Punkte:** Bei Abschluss **2x Karma-Punkte** (`karma_multiplier = 2`).
-- **Kein Anti-Cheat-Limit:** Die 7-Tage-Diminishing-Returns-Regel greift bei Non-Profits nicht, damit Nutzer regelmäßig z. B. Gassi gehen oder bei der Tafel helfen können.
 - **Social-Share-Card:** Bei Non-Profit-Hilfen wird das Organisations-Badge prominent auf der 9:16 Share-Card angezeigt.
 
 ### 1.7 Der "Bumerang-Effekt" (Top-Helfer-Priorität)
@@ -159,10 +158,9 @@ Umgesetzt in `supabase/migrations/` (Basis + Delta vom 12.11.2026), inkl. Row Le
    - `created_at` (timestamptz)
 
 ### Trigger-Logik bei Abschluss (`matches.status = 'confirmed'`)
-1. Basispunkte: bis 15 Min = 10, bis 30 Min = 20, länger = 40, "Jetzt sofort" +5.
-2. Privatperson: Diminishing Returns (gleiche Person in 7 Tagen: 2. Hilfe 25 %, ab der 3. 10 %).
-3. Non-Profit: keine Diminishing Returns.
-4. Ergebnis × `karma_multiplier`.
+1. Punkte nach bestätigter Dauer: 10 Punkte je angefangene Viertelstunde (siehe 5.9).
+2. Keine Abwertung bei wiederholter Hilfe.
+3. Ergebnis × `karma_multiplier` (2 bei verifizierten Organisationen).
 5. Tier-Stufe steigt automatisch mit, Aura wird wieder aktiv.
 6. Danach werden die Sammel-Badges aus der gesamten Historie neu berechnet und ergänzt.
 
@@ -185,7 +183,7 @@ Umgesetzt in `supabase/migrations/` (Basis + Delta vom 12.11.2026), inkl. Row Le
 - Kategorie **„Technik“** ausdrücklich mit Beispielen: Fernseher, Drucker, Handy oder Tablet einrichten.
 - Kategorie **„Haus & Garten“**: Pflanzen gießen, Briefkasten leeren, kleine Handgriffe.
 - **Wiederkehrende Hilfe (Patenschaft):** Eine Anfrage kann sich wöchentlich wiederholen und bevorzugt an dieselbe helfende Person gehen. Einsamkeit lindert man durch feste Kontakte, nicht durch wechselnde.
-- **Achtung Anti-Cheat:** Die 7-Tage-Abwertung bei derselben Person würde genau diese Patenschaften bestrafen. Sie gilt deshalb nicht für wiederkehrende Anfragen und nicht für Anfragen, die ein Träger stellvertretend einstellt.
+- Wiederkehrende Hilfe zählt immer voll (es gibt keine Abwertung mehr, siehe 5.9).
 - Einordnung: platoniq ist als Präventionskurs nach § 20 SGB V zertifiziert und wird von Krankenkassen erstattet. Das ist ein psychologisches Kursprogramm, kein Wettbewerber, aber ein Beleg dafür, dass Kassen Einsamkeit als Gesundheitsthema finanzieren. Möglicher späterer Finanzierungsweg für Karma: Pflegekassen über den Entlastungsbetrag und die Brandenburger Anerkennung von Nachbarschaftshilfe (vor Umsetzung rechtlich prüfen).
 
 ### 5.3 Messung von Anfang an
@@ -223,3 +221,25 @@ Ziel: niedrige Einstiegshürde für Helfende, mehr Sicherheit dort, wo es nötig
 - nebenan.de: Forum und Feed. Karma: konkrete Hilfe in Minuten.
 - StadtLand.Funk (früher DorfFunk): Kommunikationsplattform für Kommunen. Eigene Werkzeuge für klassische Nachbarschaftshilfe haben sich dort laut Betreiber nicht bewährt. Karma setzt dagegen auf Motivation durch Spielmechanik und verlässliche Nachfrage über Träger.
 - hilver: städtische Hilfevermittlung für Menschen ab 80 mit persönlicher Registrierung der Helfenden. Karma: offen für alle Altersgruppen, Stufenmodell statt Pflicht-Registrierung, stellvertretende Anfragen durch Träger, Messung entlasteter Fachkraftstunden.
+
+### 5.7 Hilfe anbieten, nicht nur anfragen (für alle)
+- Jede Person kann neben Anfragen auch **Angebote** einstellen: „Ich lese vor, dienstags nachmittags“, „Ich erkläre das Handy“, „Ich gehe mit spazieren“.
+- Ausdrücklich auch für ältere Menschen: Wer selbst Hilfe braucht, kann gleichzeitig helfen. Das stärkt Würde und Selbstwirksamkeit und wirkt gegen Einsamkeit in beide Richtungen.
+- Angebote erscheinen als eigene Karten im Swipe-Deck. Wer nach rechts wischt, nimmt das Angebot an, danach läuft alles wie bei einer Anfrage (Match, Chat, Abschluss, Punkte für die anbietende Person).
+- **Hilfe aus der Ferne:** Bei Angeboten und Anfragen kann „per Telefon oder Video“ gewählt werden (z. B. Vorlesen am Telefon, Technikhilfe per Video). Dann gibt es keinen Umkreis und keine Adresse. So können auch Menschen helfen, die nicht mehr gut zu Fuß sind.
+
+### 5.8 Angehörige stellen Anfragen aus der Ferne ein (Familienfreigabe)
+- Kinder, Enkel oder andere Vertrauenspersonen können für eine ältere Person Anfragen einstellen, auch wenn sie selbst weit weg wohnen. Umkreis und Adresse beziehen sich dann auf die Wohnung der älteren Person, nicht auf den Standort der Angehörigen.
+- **Freigabe:**
+  - Hat die ältere Person ein eigenes Konto, lädt sie Angehörige ein oder bestätigt deren Anfrage auf Verknüpfung.
+  - Hat sie kein Smartphone, legen Angehörige ein **betreutes Profil** an (Name, Adresse, Telefon für die Absprache an der Tür) und bestätigen, dass die Person einverstanden ist. Zusätzlich ruft Karma bzw. der Träger einmal bei der Person an oder schickt einen Brief mit Bestätigungscode. Grund: Es geht um Daten einer Person, die selbst nicht in der App ist (Datenschutz, Einwilligung).
+- Rechte der Angehörigen: Anfragen einstellen, Chat mit Helfenden führen, Abschluss bestätigen, Verknüpfung jederzeit lösen. Die ältere Person kann die Freigabe jederzeit widerrufen.
+- Sicherheit: Angehörige legen fest, welche Verifizierungsstufe Helfende mindestens haben müssen (siehe 5.4). Voreinstellung für betreute Profile: Stufe 2.
+- Dasselbe Prinzip gilt für Träger (stellvertretende Anfragen durch Fachkräfte, siehe 1.6 und 5.3). Technisch ist es eine Vertretungsbeziehung mit Rolle „Familie“ oder „Träger“.
+
+### 5.9 Punkte und Aura (Entscheidung 13.11.2026)
+- **Hilfe ist hilfe: keine Abwertung**, auch nicht bei wiederholter Hilfe für dieselbe Person. Die frühere 7-Tage-Regel entfällt vollständig.
+- **Punkte nur nach Zeit:** 10 Punkte je angefangene Viertelstunde der bestätigten tatsächlichen Dauer. Verifizierte Organisationen: doppelte Punkte. Der frühere Bonus für „Jetzt sofort“ entfällt.
+- **Kein Rückschritt der Tiere.** Wer 14 Tage nicht hilft, dessen Tier wird blasser und müder. Mit der nächsten Hilfe strahlt es wieder.
+- Schutz vor Missbrauch ohne Abwertung: Beide Seiten bestätigen die Dauer, eine einzelne Hilfe zählt höchstens 4 Stunden, und auffällige Muster (z. B. dieselben zwei Personen mehrmals am Tag) werden zur Prüfung markiert, nicht automatisch bestraft. Entlastete Fachkraftstunden zählen ohnehin nur bei Anfragen, die ein Träger bestätigt.
+- Hinweis Code: Die bestehenden Migrationen enthalten noch die alte Abwertung. Sie werden beim Start der Programmierung auf diese Regeln umgestellt.
