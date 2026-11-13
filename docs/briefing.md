@@ -289,3 +289,14 @@ Dieselben Kategorien und Vorlagen gelten für Angebote (5.7).
 - **Nutzungsbedingungen:** Karma vermittelt, ist nicht Vertragspartner der Hilfe; Regeln, Sperrgründe, ab 18 Jahren.
 - **Versicherung:** Betriebshaftpflicht und Cyber für Karma; Klärung Sammelversicherung des Landes für Helfende.
 - **Einmalige anwaltliche Prüfung** von Nutzungsbedingungen, Datenschutz und Bewertungssystem vor dem Start von Phase 2.
+
+### 5.13 Profil (Entscheidung 13.11.2026, Details offen zur Abstimmung)
+**Immer sichtbar:** Vorname und erster Buchstabe des Nachnamens, Tier mit Stufe und Aura, Sterne-Durchschnitt mit Anzahl Bewertungen und den letzten Freitexten, Anzahl Hilfen und geleistete Stunden, Verifizierungsstufe, Badges, Ortsteil (nie die Adresse), Mitglied seit.
+
+**Freiwillig:** Profilfoto (empfohlen, weil es Vertrauen schafft), Altersgruppe statt genauem Alter (z. B. „30 bis 39“), Geschlecht, Sprachen, kurzer Text „Über mich“, was ich gut kann (Skills, Werkzeug, Auto), wann ich meist Zeit habe.
+
+**Nie im Profil:** genaue Adresse, Telefonnummer, voller Nachname, Geburtsdatum, Angaben zur Gesundheit.
+
+Hinweis: Wer eine Anfrage für einen Besuch zu Hause stellt, kann optional festlegen, dass nur Frauen oder nur Männer zusagen können (Sicherheitsbedürfnis vieler älterer Frauen). Dafür muss das Geschlecht im Profil angegeben sein; ohne Angabe sieht man solche Anfragen nicht.
+
+**Auswertung im Test:** Hilfen für Einrichtungen und für Privatpersonen werden getrennt ausgewertet.
