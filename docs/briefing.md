@@ -1,6 +1,6 @@
 # Projekt-Briefing: "Karma" · Gamifizierte hyperlokale Nachbarschaftshilfe (PWA / Mobile App)
 
-Stand: 12.11.2026 · ergänzt um Non-Profit-Partner, Bumerang-Effekt und Sammel-Badges
+Stand: 13.11.2026 · ergänzt um Non-Profit-Partner, Bumerang-Effekt, Sammel-Badges sowie Abschnitt 5 (Anforderungen vom 13.11.2026)
 
 ## 1. Produktvision & Kernkonzept
 "Karma" ist ein gamifiziertes Echtzeit-Hilfesystem für Nachbarschaften, Bezirke und Uni-Campus-Umgebungen ("Tinder meets Uber für schnelle Alltagshilfe").
@@ -168,3 +168,58 @@ Umgesetzt in `supabase/migrations/` (Basis + Delta vom 12.11.2026), inkl. Row Le
 
 ### RPCs für das Frontend
 `nearby_requests` (Swipe-Feed inkl. Non-Profit- und Top-Helfer-Feldern), `swipe`, `accept_helper`, `mark_help_done`, `confirm_help`, `claim_referral`, `share_card` (Daten für die 9:16 Share-Card, nur für den Helfer selbst).
+
+---
+
+## 5. Anforderungen vom 13.11.2026 (gelten ab dem ersten Release)
+
+### 5.1 Teilen auf TikTok, Instagram, Facebook und Co.
+- Ab Release 1: Nach jeder bestätigten Hilfe und jeder Tier-Evolution erzeugt die App die 9:16-Share-Card als Bild direkt auf dem Gerät.
+- Teilen über das Teilen-Menü des Handys (Web Share API mit Bilddatei). Damit landet die Karte mit einem Tipp in Instagram-Story, TikTok, Facebook, WhatsApp. Fallback am Desktop: Bild herunterladen.
+- Keine direkte Anbindung an die Schnittstellen von TikTok oder Meta: Die verlangen eine App-Prüfung, das Teilen-Menü reicht.
+- Schutz der Hilfeempfangenden: Die Karte zeigt nie Namen, Fotos oder Adresse der Person, der geholfen wurde. Bei privaten Hilfen nur die Kategorie, bei Organisationen Titel und Organisationsname.
+- Optional: Helfende können ein eigenes Foto als Hintergrund wählen (nur von sich selbst, Hinweis in der App).
+
+### 5.2 Einsamkeit als eigener Schwerpunkt
+- Neue Kategorie **„Zeit & Gesellschaft“**: Vorlesen, Spaziergang, Gesellschaft leisten, gemeinsam einkaufen gehen.
+- Kategorie **„Technik“** ausdrücklich mit Beispielen: Fernseher, Drucker, Handy oder Tablet einrichten.
+- Kategorie **„Haus & Garten“**: Pflanzen gießen, Briefkasten leeren, kleine Handgriffe.
+- **Wiederkehrende Hilfe (Patenschaft):** Eine Anfrage kann sich wöchentlich wiederholen und bevorzugt an dieselbe helfende Person gehen. Einsamkeit lindert man durch feste Kontakte, nicht durch wechselnde.
+- **Achtung Anti-Cheat:** Die 7-Tage-Abwertung bei derselben Person würde genau diese Patenschaften bestrafen. Sie gilt deshalb nicht für wiederkehrende Anfragen und nicht für Anfragen, die ein Träger stellvertretend einstellt.
+- Einordnung: platoniq ist als Präventionskurs nach § 20 SGB V zertifiziert und wird von Krankenkassen erstattet. Das ist ein psychologisches Kursprogramm, kein Wettbewerber, aber ein Beleg dafür, dass Kassen Einsamkeit als Gesundheitsthema finanzieren. Möglicher späterer Finanzierungsweg für Karma: Pflegekassen über den Entlastungsbetrag und die Brandenburger Anerkennung von Nachbarschaftshilfe (vor Umsetzung rechtlich prüfen).
+
+### 5.3 Messung von Anfang an
+- Beim Abschluss trägt die helfende Person die **tatsächliche Dauer** ein, die anfragende Person (oder der Träger) bestätigt sie. Die Schätzung aus der Anfrage bleibt als Vergleichswert.
+- Gezählt werden pro Person, pro Quartier, pro Organisation und gesamt:
+  - Anzahl Hilfen
+  - Geleistete Stunden
+  - Anzahl verschiedener Menschen, denen geholfen wurde
+  - Davon „Zeit & Gesellschaft“ (Kennzahl gegen Einsamkeit) und Anzahl fester Patenschaften
+- **Entlastete Fachkraftstunden:** Nur Hilfen bei Anfragen, die ein Träger stellvertretend eingestellt hat. Der Träger markiert bei der Anfrage, ob die Aufgabe sonst bei seinen Fachkräften gelandet wäre. Nur diese Stunden zählen als Entlastung. So bleibt die Zahl ehrlich und hält einer Prüfung im Förderprojekt stand.
+- Auswertung für Organisationen und Wohnungsunternehmen: anonymisiert, ab einer Mindestzahl von Fällen, als Export für Förder- und Jahresberichte.
+
+### 5.4 Verifizierung in Stufen
+Ziel: niedrige Einstiegshürde für Helfende, mehr Sicherheit dort, wo es nötig ist. Karma garantiert nicht für das Verhalten Einzelner, stellt aber Regeln und Werkzeuge bereit.
+
+| Stufe | Wie | Darf |
+|---|---|---|
+| 1 Basis | E-Mail und Handynummer per SMS-Code bestätigt, ab 18 Jahren | Private Anfragen in der Nachbarschaft |
+| 2 Bestätigt | Ein Träger oder Wohnungsunternehmen bestätigt die Person nach einem persönlichen Kennenlernen | Zusätzlich Anfragen, die Träger stellvertretend für ältere Menschen einstellen |
+| 3 Ausweis | Online-Ausweisfunktion (später) | Sichtbares Ausweis-Abzeichen im Profil |
+
+- Träger legen pro Anfrage fest, welche Stufe sie mindestens verlangen.
+- Für alle: Melde- und Blockierfunktion, Sperren bei Verstößen, Regeln in den Nutzungsbedingungen, Sicherheitshinweise vor dem ersten Treffen.
+- Online-Ausweis erst später: Er braucht ein Berechtigungszertifikat (Antrag mit Handelsregisterauszug, also erst mit eingetragener Gesellschaft) und einen kostenpflichtigen eID-Dienstleister.
+- Versicherung: Klären, ob Helfende über die Sammelversicherung des Landes Brandenburg für Ehrenamtliche erfasst sind. Wenn ja, ist das ein starkes Argument für Träger und Helfende.
+
+### 5.5 Geschäftsmodell und Pilot (Arbeitsstand, noch zu validieren)
+- Wohnungsunternehmen: 0,50 € pro Wohnung und Monat, mindestens 500 € im Monat.
+- Träger der Wohlfahrt: im Pilot kostenlos, später über Förderprojekte.
+- Kommunen: Jahreslizenz nach Einwohnerzahl.
+- Pilot: 6 Monate zum halben Preis.
+- Pilotort: Potsdam. Einstieg über den Arbeitskreis StadtSpuren (Genossenschaften, kommunale Gesellschaft, Studentenwerk). Danach Übertragung in den ländlichen Raum als gefördertes Modellprojekt.
+
+### 5.6 Abgrenzung zum Wettbewerb (für Förderantrag)
+- nebenan.de: Forum und Feed. Karma: konkrete Hilfe in Minuten.
+- StadtLand.Funk (früher DorfFunk): Kommunikationsplattform für Kommunen. Eigene Werkzeuge für klassische Nachbarschaftshilfe haben sich dort laut Betreiber nicht bewährt. Karma setzt dagegen auf Motivation durch Spielmechanik und verlässliche Nachfrage über Träger.
+- hilver: städtische Hilfevermittlung für Menschen ab 80 mit persönlicher Registrierung der Helfenden. Karma: offen für alle Altersgruppen, Stufenmodell statt Pflicht-Registrierung, stellvertretende Anfragen durch Träger, Messung entlasteter Fachkraftstunden.
