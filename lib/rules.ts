@@ -6,11 +6,15 @@ export const RULES: { title: string; text: string }[] = [
   },
   {
     title: "Kein Geld über Karma",
-    text: "Hilfe ist kostenlos. Keine Bezahlung, keine Bankkarten, keine PINs, kein Bargeld für Einkäufe über die App. Auslagen klärt ihr direkt und quittiert sie.",
+    text: "Hilfe ist kostenlos, auch Mitfahren und Verleihen. Über die App fließt kein Geld. Keine Bankkarten, keine PINs. Auslagen für Einkäufe klärt ihr direkt und quittiert sie. Was ihr privat untereinander ausmacht, ist eure Sache.",
   },
   {
     title: "Schlüssel klärt ihr selbst",
     text: "Karma vermittelt keine Schlüssel. Wenn ihr einen Schlüssel übergebt, ist das eure Absprache. Tipp: Ein Schlüsseltresor ist sicherer als die Übergabe.",
+  },
+  {
+    title: "Verleihen auf eigenes Risiko",
+    text: "Wer etwas verleiht oder ausleiht, klärt Schäden oder Verluste direkt miteinander. Karma vermittelt nur und übernimmt keine Haftung.",
   },
   {
     title: "Respekt und Verlässlichkeit",

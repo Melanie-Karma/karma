@@ -44,7 +44,7 @@ export default function ProfileView({ p, hideAnimal = false }: { p: PublicProfil
           {[p.district, p.age_group ? `${p.age_group} Jahre` : null, `dabei seit ${since}`].filter(Boolean).join(" · ")}
         </p>
         <div className="mt-3 flex flex-wrap justify-center gap-2">
-          <Chip tone={p.verification_level >= 2 ? "forest" : "plain"}>✓ {LEVEL_LABEL[p.verification_level]}</Chip>
+          <Chip tone={p.verification_level >= 2 ? "brand" : "plain"}>✓ {LEVEL_LABEL[p.verification_level]}</Chip>
           {p.languages.length > 0 && <Chip>🗣 {p.languages.join(", ")}</Chip>}
         </div>
       </section>
@@ -93,7 +93,7 @@ export default function ProfileView({ p, hideAnimal = false }: { p: PublicProfil
             {ratings.map((r) => (
               <li key={r.id} className="border-t border-ink/5 pt-3">
                 <p className="text-sm">
-                  <span className="text-amber-500">{"★".repeat(r.stars)}</span>
+                  <span className="text-sun-deep">{"★".repeat(r.stars)}</span>
                   <span className="text-ink/15">{"★".repeat(5 - r.stars)}</span>
                   <span className="ml-2 font-bold">{r.rater_name}</span>
                   <span className="ml-2 text-xs text-muted">{relativeTime(r.created_at)}</span>
@@ -111,7 +111,7 @@ export default function ProfileView({ p, hideAnimal = false }: { p: PublicProfil
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="rounded-3xl bg-white p-4">
-      <p className="text-2xl font-extrabold text-forest">{value}</p>
+      <p className="text-2xl font-extrabold text-brand">{value}</p>
       <p className="text-xs font-bold text-muted">{label}</p>
     </div>
   );

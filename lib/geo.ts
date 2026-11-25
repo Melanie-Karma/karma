@@ -16,10 +16,14 @@ export function lastKnownPosition(): LatLng | null {
   }
 }
 
-/** Aktuellen Standort holen. Fällt auf den letzten bekannten oder Trebbin zurück. */
-export function currentPosition(timeoutMs = 8000): Promise<{ pos: LatLng; precise: boolean }> {
+/** Aktuellen Standort holen. Fällt auf Heimatort, letzten bekannten Standort oder Trebbin zurück. */
+export function currentPosition(
+  timeoutMs = 8000,
+  home: LatLng | null = null,
+): Promise<{ pos: LatLng; precise: boolean }> {
   return new Promise((resolve) => {
-    const fallback = () => resolve({ pos: lastKnownPosition() ?? TREBBIN, precise: false });
+    // Ohne Freigabe: eingegebener Heimatort, sonst letzter bekannter Standort, sonst Trebbin
+    const fallback = () => resolve({ pos: home ?? lastKnownPosition() ?? TREBBIN, precise: false });
     if (typeof navigator === "undefined" || !navigator.geolocation) return fallback();
     navigator.geolocation.getCurrentPosition(
       (p) => {
@@ -35,4 +39,23 @@ export function currentPosition(timeoutMs = 8000): Promise<{ pos: LatLng; precis
       { enableHighAccuracy: false, timeout: timeoutMs, maximumAge: 5 * 60 * 1000 },
     );
   });
+}
+
+/**
+ * Grober Ortsname zu einem Punkt (z. B. "Trebbin" oder "Glau (Trebbin)"), über OpenStreetMap.
+ * Wird mit jeder Anfrage gespeichert, damit Helfende einschätzen können, wo es ist.
+ */
+export async function placeName(pos: LatLng): Promise<string | null> {
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&addressdetails=1&lat=${pos.lat}&lon=${pos.lng}`;
+    const res = await fetch(url, { headers: { "Accept-Language": "de" } });
+    if (!res.ok) return null;
+    const a = ((await res.json()) as { address?: Record<string, string> }).address ?? {};
+    const town = a.city ?? a.town ?? a.municipality;
+    const local = a.village ?? a.hamlet ?? a.suburb ?? a.city_district;
+    if (town && local && local !== town) return `${local} (${town})`;
+    return town ?? local ?? null;
+  } catch {
+    return null;
+  }
 }

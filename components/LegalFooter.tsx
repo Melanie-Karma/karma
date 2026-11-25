@@ -7,6 +7,9 @@ export default function LegalFooter() {
       <Link href="/regeln" className="underline underline-offset-4">
         Regeln
       </Link>
+      <Link href="/nutzungsbedingungen" className="underline underline-offset-4">
+        Nutzungsbedingungen
+      </Link>
       <Link href="/impressum" className="underline underline-offset-4">
         Impressum
       </Link>

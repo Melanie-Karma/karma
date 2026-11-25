@@ -88,7 +88,7 @@ export default function Chat({
           const mine = m.sender_id === meId;
           return (
             <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[80%] rounded-2xl px-3 py-2 ${mine ? "bg-forest text-paper" : "bg-paper"}`}>
+              <div className={`max-w-[80%] rounded-2xl px-3 py-2 ${mine ? "bg-brand text-paper" : "bg-paper"}`}>
                 {!mine && <p className="text-xs font-bold text-muted">{names[m.sender_id] ?? "Jemand"}</p>}
                 <p className="break-words whitespace-pre-wrap">{m.body}</p>
                 <p className={`mt-0.5 text-[10px] ${mine ? "text-paper/60" : "text-muted"}`}>

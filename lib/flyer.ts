@@ -13,7 +13,7 @@ export async function buildFlyer({ place, inviteUrl }: FlyerInput): Promise<jsPD
     errorCorrectionLevel: "M",
     margin: 0,
     width: 900,
-    color: { dark: "#14201A", light: "#FFFFFF" },
+    color: { dark: "#23201D", light: "#FFFFFF" },
   });
 
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -21,9 +21,9 @@ export async function buildFlyer({ place, inviteUrl }: FlyerInput): Promise<jsPD
   const ink: [number, number, number] = [20, 32, 26];
 
   // Kopf
-  doc.setFillColor(15, 61, 46);
+  doc.setFillColor(29, 78, 92);
   doc.rect(0, 0, W, 112, "F");
-  doc.setFillColor(198, 242, 78);
+  doc.setFillColor(255, 122, 89);
   doc.roundedRect(20, 20, 38, 11, 5.5, 5.5, "F");
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
@@ -33,13 +33,13 @@ export async function buildFlyer({ place, inviteUrl }: FlyerInput): Promise<jsPD
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(40);
   doc.text(["Kurz mal", "Hilfe gebraucht?"], 20, 54);
-  doc.setTextColor(198, 242, 78);
+  doc.setTextColor(255, 200, 87);
   doc.text("Oder 15 Minuten Zeit?", 20, 88);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(13);
   doc.setTextColor(255, 255, 255);
-  doc.text("Nachbarschaftshilfe per Swipe. Ohne Geld, ohne Tratsch.", 20, 101);
+  doc.text("Menschen helfen Menschen. Ohne Geld, ohne Tratsch.", 20, 101);
 
   // QR-Code
   const size = 92;
@@ -62,7 +62,7 @@ export async function buildFlyer({ place, inviteUrl }: FlyerInput): Promise<jsPD
   doc.text(doc.splitTextToSize(line, 170), W / 2, 254, { align: "center" });
 
   doc.setFontSize(10);
-  doc.setTextColor(90, 100, 95);
+  doc.setTextColor(107, 98, 91);
   doc.text(inviteUrl.replace(/^https?:\/\//, ""), W / 2, 284, { align: "center" });
 
   return doc;

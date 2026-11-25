@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/supabase";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
@@ -21,8 +22,8 @@ export async function GET(request: NextRequest) {
 
   const cookieStore = await cookies();
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_KEY,
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
@@ -37,6 +38,14 @@ export async function GET(request: NextRequest) {
     failed = Boolean((await supabase.auth.exchangeCodeForSession(code)).error);
   } else if (tokenHash && type) {
     failed = Boolean((await supabase.auth.verifyOtp({ type, token_hash: tokenHash })).error);
+  }
+
+  // Mailprogramme öffnen Links oft doppelt (Vorschau, Virenscanner). Der zweite Aufruf
+  // scheitert dann, obwohl die Anmeldung beim ersten geklappt hat. Deshalb: Wer schon
+  // angemeldet ist, kommt trotzdem in die App.
+  if (failed) {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) failed = false;
   }
 
   return NextResponse.redirect(new URL(failed ? "/?fehler=link" : next, origin));

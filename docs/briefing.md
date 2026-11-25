@@ -1,6 +1,6 @@
 # Projekt-Briefing: "Karma" · Gamifizierte hyperlokale Nachbarschaftshilfe (PWA / Mobile App)
 
-Stand: 13.11.2026 · ergänzt um Non-Profit-Partner, Bumerang-Effekt, Sammel-Badges sowie Abschnitt 5 (Anforderungen vom 13.11.2026, zweite Runde: keine Abwertung, Hilfsangebote, Familienfreigabe)
+Stand: 17.11.2026 · neu: Abschnitt 5.15 bis 5.17 (Menschen helfen Menschen, Vereins-Einsätze, Push mit Zusage). Davor ergänzt um Non-Profit-Partner, Bumerang-Effekt, Sammel-Badges sowie Abschnitt 5 (Anforderungen vom 13.11.2026, zweite Runde: keine Abwertung, Hilfsangebote, Familienfreigabe)
 
 ## 1. Produktvision & Kernkonzept
 "Karma" ist ein gamifiziertes Echtzeit-Hilfesystem für Nachbarschaften, Bezirke und Uni-Campus-Umgebungen ("Tinder meets Uber für schnelle Alltagshilfe").
@@ -217,10 +217,25 @@ Ziel: niedrige Einstiegshürde für Helfende, mehr Sicherheit dort, wo es nötig
 - Pilot: 6 Monate zum halben Preis.
 - Pilotort: Potsdam. Einstieg über den Arbeitskreis StadtSpuren (Genossenschaften, kommunale Gesellschaft, Studentenwerk). Danach Übertragung in den ländlichen Raum als gefördertes Modellprojekt.
 
-### 5.6 Abgrenzung zum Wettbewerb (für Förderantrag)
-- nebenan.de: Forum und Feed. Karma: konkrete Hilfe in Minuten.
-- StadtLand.Funk (früher DorfFunk): Kommunikationsplattform für Kommunen. Eigene Werkzeuge für klassische Nachbarschaftshilfe haben sich dort laut Betreiber nicht bewährt. Karma setzt dagegen auf Motivation durch Spielmechanik und verlässliche Nachfrage über Träger.
-- hilver: städtische Hilfevermittlung für Menschen ab 80 mit persönlicher Registrierung der Helfenden. Karma: offen für alle Altersgruppen, Stufenmodell statt Pflicht-Registrierung, stellvertretende Anfragen durch Träger, Messung entlasteter Fachkraftstunden.
+### 5.6 Abgrenzung zum Wettbewerb (überarbeitet 13.11.2026)
+Kernsatz: **Karma ist die einzige Nachbarschafts-App, die nur eins macht: Hilfe schnell zusammenbringen und sichtbar machen, was sie bewirkt.**
+
+Drei Arten von Konkurrenz:
+- **Digitale Schwarze Bretter** (nebenan.de, StadtLand.Funk/früher DorfFunk, Communi): Hilfe ist eine Rubrik neben Plausch, Marktplatz, Fundsachen und Rathaus-News. Anfragen gehen unter. StadtLand.Funk wird teils von Bundesländern finanziert und ist für Kommunen dann kostenlos (Preisdruck; prüfen, ob Trebbin oder Teltow-Fläming es nutzen).
+- **Vermittlungs-Apps für Senioren** (hilver): eng geführt, z. B. Heidelberg nur für Menschen ab 80 mit höchstens Pflegegrad 1, Helfende stellen sich persönlich beim Amt vor. Viel Vertrauen, aber hohe Hürde und Personalaufwand bei der Stadt.
+- **Facebook- und WhatsApp-Gruppen**: kostenlos und vorhanden, aber keine Messung, keine Wertschätzung, Anfragen verschwinden.
+
+Was Karma anders macht:
+- Nur Hilfe: kein Feed, kein Marktplatz, keine Diskussion. Anfrage rein, Zusage per Klick.
+- Niedrige Hürde für Helfende: 15 Minuten Zeit reichen, kein Termin beim Amt.
+- Helfen wird gesehen: Punkte, Tier, Bewertungen (Wertschätzung, Kudora-Kompetenz).
+- Wirkung messbar: Stunden, Menschen, entlastete Fachkraftstunden (Argument für Träger und Kommunen).
+- Für alle Generationen: auch Ältere helfen, z. B. Vorlesen per Telefon.
+
+Offene Flanken:
+- Vertrauen: im Test nur E-Mail. Antwort: Verifizierungsstufe 2 über Träger, daher Partnerschaft mit dem Paritätischen.
+- Preis: kostenlose Landeslösungen.
+- Spielmechanik kann bei Älteren verspielt wirken. Gegenüber Kommunen und Trägern als „Wertschätzung“ und „Wirkungsnachweis“ formulieren, nicht als „Gamification“.
 
 ### 5.7 Hilfe anbieten, nicht nur anfragen (für alle)
 - Jede Person kann neben Anfragen auch **Angebote** einstellen: „Ich lese vor, dienstags nachmittags“, „Ich erkläre das Handy“, „Ich gehe mit spazieren“.
@@ -300,3 +315,85 @@ Dieselben Kategorien und Vorlagen gelten für Angebote (5.7).
 **Geschlecht bei der Anfrage** (Entscheidung 13.11.2026): Jede Anfrage hat das Feld „Wer darf helfen?“ mit „egal“ (Standard), „nur Frauen“ oder „nur Männer“. Wer nicht passt, bekommt die Anfrage gar nicht erst angezeigt, auch Personen ohne Angabe zum Geschlecht nicht.
 
 **Auswertung im Test:** Hilfen für Einrichtungen und für Privatpersonen werden getrennt ausgewertet.
+
+### 5.14 Unbeantwortete Anfragen und Erlösquellen (Idee 13.11.2026, offen)
+Melanies Punkt: Bleibt eine Anfrage ohne Hilfe, fragt die Person nicht wieder und ist raus. Unbeantwortete Anfragen sollen deshalb weitergeleitet werden.
+
+Vorschlag Eskalationsstufen (Reihenfolge noch abstimmen):
+1. Nach einigen Stunden: Umkreis erweitern, mehr Helfende benachrichtigen (braucht Push, Stufe 2).
+2. Wenn die Person einen Pflegegrad hat: an registrierte Nachbarschaftshelfer nach dem Brandenburger Modell „Nachbarschaftshilfe in der Pflege“ (seit Januar 2026, bis 10 € je Stunde Aufwandsentschädigung, erstattet aus dem Entlastungsbetrag von 131 € im Monat). Karma würde nur vermitteln und die Stunden als Nachweis dokumentieren, kein Geld über Karma.
+3. An Firmen: anerkannte Alltagshilfe-Dienste, Hausmeisterdienste, Handwerker. Erlös: Gebühr pro weitergeleiteter Anfrage oder Monatspauschale je Gebiet.
+
+Bedingungen: Weiterleitung nur mit ausdrücklicher Zustimmung der anfragenden Person (Datenschutz). Firmen rechnen direkt mit der Person ab.
+
+Warum das für die Monetarisierung interessant ist: In Brandenburg waren Mitte 2026 rund 665 Nachbarschaftshelfer registriert, von rund 190.000 Anspruchsberechtigten nutzt nur gut die Hälfte den Entlastungsbetrag, und die Servicepunkte in Potsdam, Teltow-Fläming und Barnim waren noch im Aufbau. Eine Vermittlung zwischen Helfenden und Pflegebedürftigen nennt das Land nicht. Mögliche Zahler: Landkreis, Pflegekassen, Träger der Servicepunkte, Anbieter von Alltagshilfe.
+
+Im Test messen: Anteil Anfragen ohne Zusage nach 24 Stunden, Kategorie, ob die Person einen Pflegegrad hat (nur freiwillig, nicht speichern ohne Einwilligung), ob sie für Hilfe zahlen würde.
+
+
+
+### 5.15 Grundsatz: Menschen helfen Menschen (Entscheidung 17.11.2026)
+Karma ist keine Senioren- oder Pflege-App. Alle helfen allen, quer durch alle Altersgruppen. Beispiele, die die App von Anfang an abdecken soll:
+- Umzug: mehrere Helfende für ein paar Stunden
+- Dorf oder Verein plant eine Aufräumaktion
+- Dem Nachbarn fehlt ein Werkzeug (z. B. eine Säge): Ausleihen von Gegenständen
+- Mitfahrgelegenheit zum Einkauf, Arzt oder Bahnhof
+- Ältere Menschen geben selbst Hilfe, z. B. Vorlesen (siehe 5.7), statt nur zu nehmen
+
+Für Förderanträge darf eine Wirkung zugespitzt werden (Entlastung Älterer und Pflegender, Zusammenhalt im ländlichen Raum). Das Produkt und die Ansprache der Nutzer bleiben breit. Argument für Förderer: Eine reine Senioren-App hat zu wenige Helfende, Karma bringt sie mit.
+
+Entscheidungen vom 17.11.2026 (umgesetzt in Stufe 2):
+- **Verleihen:** eigene Kategorie „Leihen & Verleihen“ mit Rückgabedatum. Gibt die Hälfte der Punkte gegenüber aktiver Hilfe. Schäden und Verluste klären die Nutzer untereinander, Karma übernimmt keine Haftung (Regel und Hinweis im Formular).
+- **Mitfahren:** eigene Kategorie, ohne Bezahlung wie alles auf Karma. Trinkgeld oder Spritgeld ist nicht Teil von Karma, das machen die Leute privat untereinander.
+- **Gemeinsam anpacken:** neue Kategorie für Aufräumaktionen, Sammelaktionen, Feste, auch mit vielen Helfenden.
+
+### 5.16 Vereine und gemeinnützige Einrichtungen fragen Einsätze an
+Ergänzt 1.6. Verifizierte gemeinnützige Organisationen (z. B. Kältebus, Tafel, Tierheim, Sammelaktion) stellen Einsätze direkt ein:
+- Felder: was, wo, Zeitpunkt, Dauer, wie viele Helfende gebraucht werden
+- Mehrere Helfende pro Einsatz, Zusagen bis die Zahl erreicht ist
+- Stand in der App (Stufe 1): Konto-Typ Organisation, Verifizierung durch Admin, Einrichtungs-Anfrage und mehrere Helfende sind gebaut. Noch offen: Herz-Badge und Kategorie aus 1.6, wiederkehrende Einsätze (z. B. jeden Dienstag Kältebus).
+
+### 5.17 Push-Benachrichtigung mit Zusage oder Absage
+Passende Personen bekommen eine Push-Nachricht mit:
+- Zeitpunkt, Dauer, wer (Person oder Verein), was, wo (ungefähre Entfernung, keine genaue Adresse vor der Zusage)
+- zwei Knöpfen direkt in der Nachricht: **Zusagen** oder **Ablehnen**
+
+Regeln (Entscheidung 17.11.2026, umgesetzt):
+- Ablehnen hat keine Folgen, keine Minuspunkte, keine Abwertung.
+- Wer bekommt Push: nur Anfragen aus der eigenen Gegend. Maßgeblich ist der **Aufenthaltsort** (letzter Standort der letzten 3 Tage beim Öffnen der App), nicht der Wohnort. Umkreis wie im Feed eingestellt.
+- Höchstens **3 Nachrichten pro Tag** als Standard, im Profil anpassbar (1, 2, 3, 5, 10). Ruhezeit 21 bis 8 Uhr.
+- Nur Anfragen vor Ort, keine Angebote und keine Telefon-Hilfen per Push.
+- Bei Zusage gilt dieselbe Logik wie im Wisch-Stapel: automatische Annahme oder Bestätigung durch die anfragende Person.
+- Technik: Web-Push für die PWA. Auf dem iPhone funktioniert das nur, wenn Karma zum Home-Bildschirm hinzugefügt wurde (iOS 16.4 oder neuer). Für den Test in Trebbin heißt das: Beim Onboarding gezielt durch „Zum Home-Bildschirm“ führen.
+- Grundlage für die Eskalation in 5.14 (Umkreis erweitern, mehr Leute benachrichtigen).
+
+### 5.18 Punkte, Tiere, Streak (18.11.2026)
+- Begriff in der App: **Karma-Punkte**.
+- **Verleihen** gibt einmalig **5 Karma-Punkte**, unabhängig von der Dauer (ersetzt "halbe Punkte" aus 5.15). DB: `points_for`.
+- **Tiere (Stand 18.11., 16 Stufen, erst schnell, dann langsamer):** Amöbe 0, Keimling 10, Wurm 20, Ameise 40, Käfer 60, Maus 90, Igel 130, Hase 180, Eichhörnchen 250, Fuchs 340, Eule 450, Reh 600, Wolf 800, Bär 1050, Adler 1400, Drache 1800. DB: `stage_for_points`, Check 1 bis 16.
+- Profil zeigt Fortschritt "Noch X Karma-Punkte bis …" plus alle Tiere mit Schwelle.
+- **Wochen-Streak** mit Flamme: Wochen in Folge mit mindestens einer abgeschlossenen Hilfe (Mo bis So, deutsche Zeit). Lebt, solange in dieser oder letzter Woche geholfen wurde. Flamme wächst ab 3, 6 und 10 Wochen. DB: `profiles.streak_weeks`, `profiles.streak_week`, fortgeschrieben in `award_points`.
+
+### 5.19 Standort und Heimatort (19.11.2026)
+- Web-App kann den Standort nicht im Hintergrund verfolgen (Browser erlauben das nicht). Push kommt trotzdem jederzeit an, der Ort wird aber nur aktualisiert, wenn die App geöffnet ist.
+- **Heimatort** (PLZ und Ort über OpenStreetMap oder aktueller Standort): gilt für Feed und Push, wenn der Standort aus ist oder älter als 3 Tage. Abfrage im Onboarding (überspringbar) und im Profil. DB: `profiles.home_lat/home_lng/home_label`, `set_home_location`, `effective_location`, `push_targets`.
+- Echte Hintergrund-Ortung nur mit nativer App (Capacitor o. ä., App-Store, Akku, DSGVO). Erst prüfen, wenn der Test zeigt, dass es fehlt.
+
+### 5.20 Grober Ort sichtbar (19.11.2026)
+- Jede Anfrage vor Ort bekommt einen groben Ortsnamen (z. B. "Trebbin", bei Ortsteilen "Glau (Trebbin)"), ermittelt über OpenStreetMap beim Erstellen. Sichtbar für alle in Feed und Detail. Adresshinweis und Kartenpunkt weiter nur für Angenommene. DB: `help_requests.place_label`, `set_request_place`, `get_request`, `nearby_requests`.
+
+### 5.21 Nachbarschafts-Rangliste (19.11.2026)
+- Seite `/app/nachbarn` (Link im Feed "Deine Nachbarschaft" und im Profil): Anzahl Nachbarn im eigenen Umkreis, Liste mit Vorname, Tier, Streak und Punkten. Zwei Wertungen: **Diese Woche** (startet montags neu, damit Neue mithalten können) und **Insgesamt**. Eigener Platz oben mit "Noch X Punkte, dann überholst du …".
+- Ort je Person wie bei Push: frischer Aufenthaltsort, sonst Heimatort. Wer keinen Ort hat, taucht nicht auf.
+- Opt-out im Profil ("In der Nachbarschafts-Rangliste zeigen", Standard an). DB: `points_log`, `award_points` protokolliert, `profiles.show_in_board`, `neighbors_board`.
+
+### 5.22 Weniger erklären, Push für Angebote, Einladen (19.11.2026)
+- Startseite erklärt Punkte und Tierverhalten nicht mehr im Detail: nur "Jede Hilfe bringt Karma-Punkte, dein Tier wächst", ein paar Tiere als Vorschau, das letzte bleibt ein Rätsel. Fortschritt "Noch X bis …" bleibt im Profil. Hinweis aufs müde Tier erst, wenn es grau ist (Feed und Profil).
+- Neue Tiere starten munter, nach 14 Tagen ohne Hilfe **und ohne neues Angebot** werden sie grau (`last_active_at`, Trigger `help_requests_offer_awake`, `refresh_auras`).
+- **Push auch für neue Angebote** (nicht nur Hilfegesuche), Text "… bietet an · jederzeit/heute/…". Push ist standardmäßig an (`push_enabled` default true), der Browser fragt trotzdem einmal (Onboarding oder Profil).
+- **Einladen:** Link teilen enthält `?ref=<Profil-ID>`. Meldet sich jemand darüber an und macht das Profil fertig, bekommt der Werber einmalig **2 Karma-Punkte** (zählt auch in der Wochenwertung). Anzeige "Bisher: X Personen" im Profil. DB: `profiles.referred_by/referral_paid`, `handle_new_user`, `accept_terms`, `my_referrals`.
+
+### 5.23 Push-Erinnerung und Feier-Moment (23.11.2026)
+- **Push als Standard:** Hat ein Gerät noch kein Push-Abo, kommt beim Öffnen der App (nach einem eventuellen Feier-Moment) ein Pop-up „Dürfen wir dir Bescheid geben?“ mit großem **OK**, danach direkt die Abfrage des Handys. „Später“ fragt beim nächsten Öffnen wieder, „Nein, ich will keine“ zeigt erst „Das ist völlig in Ordnung. Du verpasst dann aber, wenn jemand in deiner Nähe schnell Hilfe braucht.“ und setzt nach Bestätigung `push_enabled = false`. Beim Erstlogin dieselbe Frage, ohne „Später“ (im Profil wieder einschaltbar). Auf dem iPhone ohne Home-Bildschirm-Symbol erklärt das Pop-up diesen Schritt. Grund: Browser und iOS verlangen ein eigenes „Erlauben“. Beim Öffnen meldet die App ein vorhandenes Abo außerdem erneut an die Datenbank (`syncPushSubscription`).
+- **Feier-Moment:** Einmaliger, wegklickbarer Hinweis beim Öffnen der App, z. B. „+2 Karma-Punkte, Uwe ist über deine Einladung dabei“. DB: `user_notices`, `my_notices`, `dismiss_notice`; `accept_terms` legt den Hinweis bei jeder gezählten Einladung automatisch an.
+- Nachgetragen: Einladungen von Uwe und Andreas für Melanie (je 2 Punkte).

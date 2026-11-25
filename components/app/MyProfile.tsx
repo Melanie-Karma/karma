@@ -4,8 +4,11 @@ import Link from "next/link";
 import { useCallback, useEffect, useState, type ChangeEvent } from "react";
 import { useApp } from "@/components/app/AppShell";
 import ProfileView from "@/components/app/ProfileView";
-import { Sheet, Spinner, btn, card, input, useToast } from "@/components/ui";
-import { animalFor, progressFor } from "@/lib/animals";
+import HomeLocation from "@/components/app/HomeLocation";
+import PushSettings from "@/components/app/PushSettings";
+import { disablePushOnDevice } from "@/lib/push";
+import { AnimalBubble, Sheet, Spinner, StreakFlame, btn, card, input, useToast } from "@/components/ui";
+import { ANIMALS, animalFor, progressFor, streakFor } from "@/lib/animals";
 import { AGE_GROUPS, errorText, type Gender, type PublicProfile } from "@/lib/karma";
 import { getSupabase } from "@/lib/supabase";
 
@@ -13,6 +16,7 @@ export default function MyProfile() {
   const { profile, reloadProfile } = useApp();
   const [pub, setPub] = useState<PublicProfile | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const { toast, toastNode } = useToast();
 
@@ -28,6 +32,13 @@ export default function MyProfile() {
 
   const animal = animalFor(profile.animal_stage);
   const prog = progressFor(profile.karma_points, profile.animal_stage);
+  const streak = streakFor(profile.streak_weeks, profile.streak_week);
+  const [referrals, setReferrals] = useState(0);
+  useEffect(() => {
+    void getSupabase()
+      .rpc("my_referrals")
+      .then(({ data }) => setReferrals(Number(data ?? 0)));
+  }, []);
 
   async function uploadAvatar(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -58,8 +69,8 @@ export default function MyProfile() {
   }
 
   async function invite() {
-    const url = window.location.origin;
-    const text = "Ich teste gerade Karma, Nachbarschaftshilfe per Swipe hier in Trebbin. Machst du mit?";
+    const url = `${window.location.origin}/?ref=${profile.id}`;
+    const text = "Ich teste gerade Karma: Menschen helfen Menschen, hier in Trebbin. Machst du mit?";
     try {
       if (navigator.share) {
         await navigator.share({ title: "Karma", text, url });
@@ -74,41 +85,78 @@ export default function MyProfile() {
 
   async function flyer() {
     const { downloadFlyer } = await import("@/lib/flyer");
-    await downloadFlyer({ place: "Trebbin", inviteUrl: window.location.origin }, "trebbin");
+    await downloadFlyer({ place: "Trebbin", inviteUrl: `${window.location.origin}/?ref=${profile.id}` }, "trebbin");
   }
 
   return (
     <div className="space-y-4">
-      <section className="rounded-3xl bg-forest p-5 text-paper">
+      <section className="rounded-3xl bg-brand p-5 text-paper">
         <div className="flex items-center gap-4">
-          <span
-            className={`grid h-20 w-20 place-items-center rounded-full text-5xl ${profile.aura_active ? "bg-lime shadow-[0_0_0_8px_rgba(198,242,78,.3)]" : "bg-paper/10 opacity-70 grayscale"}`}
-          >
-            {animal.emoji}
-          </span>
+          <AnimalBubble animal={animal} aura={profile.aura_active} size={46} />
           <div className="flex-1">
             <p className="text-sm text-paper/70">Dein Tier</p>
             <p className="text-2xl font-extrabold">{animal.name}</p>
-            <p className="font-bold text-lime">{profile.karma_points} Karma</p>
+            <p className="font-bold text-sun">{profile.karma_points} Karma-Punkte</p>
           </div>
         </div>
         {prog.next ? (
           <div className="mt-4">
-            <div className="h-2.5 overflow-hidden rounded-full bg-paper/15">
-              <div className="h-full rounded-full bg-lime" style={{ width: `${Math.round(prog.ratio * 100)}%` }} />
+            <div className="h-3 overflow-hidden rounded-full bg-paper/15">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-sun to-accent"
+                style={{ width: `${Math.max(4, Math.round(prog.ratio * 100))}%` }}
+              />
             </div>
-            <p className="mt-2 text-sm text-paper/80">
-              Noch {prog.missing} Karma bis {prog.next.emoji} {prog.next.name}
+            <p className="mt-2 text-sm">
+              Noch <b className="text-sun">{prog.missing} Karma-Punkte</b> bis {prog.next.emoji} <b>{prog.next.name}</b>{" "}
+              <span className="text-paper/70">(ab {prog.next.from})</span>
             </p>
           </div>
         ) : (
           <p className="mt-3 text-sm text-paper/80">Höchste Stufe erreicht. Danke für so viel Hilfe!</p>
         )}
+        <ol className="-mx-5 mt-4 flex gap-3 overflow-x-auto px-5 pb-1" aria-label="Alle Tiere">
+          {ANIMALS.map((a) => (
+            <li key={a.stage} className="flex flex-col items-center gap-1">
+              <AnimalBubble animal={a} size={15} aura={a.stage === profile.animal_stage} dim={a.stage > profile.animal_stage} />
+              <span className={`text-[10px] font-bold ${a.stage === profile.animal_stage ? "text-sun" : "text-paper/60"}`}>
+                {a.from}
+              </span>
+            </li>
+          ))}
+        </ol>
         {!profile.aura_active && (
           <p className="mt-3 rounded-2xl bg-paper/10 p-3 text-sm">
-            Dein Tier ruht gerade. Es leuchtet wieder, sobald du jemandem hilfst.
+            Dein Tier ist müde und grau geworden. Hilf jemandem oder biete etwas an, dann wird es wieder munter.
           </p>
         )}
+      </section>
+
+      <section className="flex items-center gap-4 rounded-3xl bg-white p-5">
+        <span className="grid h-16 w-16 place-items-center">
+          <StreakFlame weeks={streak.weeks} size={34} />
+        </span>
+        <div className="flex-1">
+          {streak.weeks > 0 ? (
+            <>
+              <p className="text-xl font-extrabold text-ink">
+                {streak.weeks} {streak.weeks === 1 ? "Woche" : "Wochen"} in Folge
+              </p>
+              <p className="text-sm text-muted">
+                {streak.thisWeek
+                  ? "Diese Woche hast du schon geholfen. Deine Flamme brennt."
+                  : "Hilf diese Woche jemandem, sonst erlischt deine Flamme am Sonntag."}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-xl font-extrabold text-ink">Noch keine Flamme</p>
+              <p className="text-sm text-muted">
+                Hilf jede Woche mindestens einmal, dann wächst deine Flamme von Woche zu Woche.
+              </p>
+            </>
+          )}
+        </div>
       </section>
 
       <div className="flex gap-3">
@@ -121,13 +169,45 @@ export default function MyProfile() {
         </button>
       </div>
 
+      <PushSettings />
+
+      <HomeLocation />
+
+      <section className={`${card} flex items-center justify-between gap-3`}>
+        <div>
+          <h2 className="font-extrabold">In der Nachbarschafts-Rangliste zeigen</h2>
+          <p className="text-sm text-muted">Vorname, Tier und Punkte sehen Nachbarn in deinem Umkreis.</p>
+          <Link href="/app/nachbarn" className="text-sm font-bold underline">
+            🏆 Zur Rangliste
+          </Link>
+        </div>
+        <input
+          type="checkbox"
+          className="h-6 w-6 accent-[var(--color-brand)]"
+          checked={profile.show_in_board}
+          onChange={async (e) => {
+            await getSupabase().from("profiles").update({ show_in_board: e.target.checked }).eq("id", profile.id);
+            await reloadProfile();
+          }}
+          aria-label="In der Rangliste zeigen"
+        />
+      </section>
+
       {pub ? <ProfileView p={pub} hideAnimal /> : <Spinner />}
 
       <section className={`${card} space-y-3`}>
         <h2 className="font-extrabold">Nachbarn einladen</h2>
-        <p className="text-sm text-muted">Je mehr mitmachen, desto schneller findet jede Anfrage Hilfe.</p>
+        <p className="text-sm text-muted">
+          Für jede Person, die über deinen Link mitmacht, bekommst du <b className="text-ink">2 Karma-Punkte</b>.
+          {referrals > 0 && (
+            <>
+              {" "}
+              Bisher: <b className="text-ink">{referrals}</b> {referrals === 1 ? "Person" : "Personen"}.
+            </>
+          )}
+        </p>
         <div className="flex gap-3">
-          <button type="button" className={`${btn.lime} flex-1`} onClick={invite}>
+          <button type="button" className={`${btn.accent} flex-1`} onClick={invite}>
             Link teilen
           </button>
           <button type="button" className={`${btn.ghost} flex-1`} onClick={flyer}>
@@ -146,10 +226,18 @@ export default function MyProfile() {
         <Link href="/impressum" className="underline">
           Impressum
         </Link>
+        <Link href="/nutzungsbedingungen" className="underline">
+          Nutzungsbedingungen
+        </Link>
         <button type="button" className="underline" onClick={() => void getSupabase().auth.signOut()}>
           Abmelden
         </button>
+        <button type="button" className="underline" onClick={() => setDeleteOpen(true)}>
+          Konto löschen
+        </button>
       </section>
+
+      <DeleteAccountSheet open={deleteOpen} onClose={() => setDeleteOpen(false)} userId={profile.id} />
 
       <EditSheet
         open={editOpen}
@@ -162,6 +250,119 @@ export default function MyProfile() {
       />
       {toastNode}
     </div>
+  );
+}
+
+/** Konto endgültig löschen: Foto, Push auf diesem Gerät, dann alles in der Datenbank */
+function DeleteAccountSheet({ open, onClose, userId }: { open: boolean; onClose: () => void; userId: string }) {
+  const [step, setStep] = useState<1 | 2>(1);
+  const [confirmText, setConfirmText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function deleteAccount() {
+    setBusy(true);
+    setError(null);
+    const supabase = getSupabase();
+    try {
+      const { data: files } = await supabase.storage.from("avatars").list(userId);
+      if (files?.length) {
+        await supabase.storage.from("avatars").remove(files.map((f) => `${userId}/${f.name}`));
+      }
+    } catch {
+      /* Foto egal, Konto trotzdem löschen */
+    }
+    try {
+      await disablePushOnDevice();
+    } catch {
+      /* egal */
+    }
+    const { error: rpcError } = await supabase.rpc("delete_my_account");
+    if (rpcError) {
+      setBusy(false);
+      setError("Das hat nicht geklappt. Bitte versuch es nochmal oder schreib uns an kontakt@meinguteskarma.de.");
+      return;
+    }
+    await supabase.auth.signOut({ scope: "local" });
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("karma_"))
+        .forEach((k) => localStorage.removeItem(k));
+    } catch {
+      /* kein Speicher verfügbar */
+    }
+    window.location.replace("/?konto=geloescht");
+  }
+
+  function close() {
+    if (busy) return;
+    setStep(1);
+    setConfirmText("");
+    setError(null);
+    onClose();
+  }
+
+  return (
+    <Sheet open={open} onClose={close} title="Konto löschen">
+      {step === 1 ? (
+        <>
+          <p className="text-ink/80">Wenn du dein Konto löschst, ist sofort und endgültig weg:</p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-ink/80">
+            <li>dein Profil mit Foto, dein Tier und deine Karma-Punkte</li>
+            <li>deine Anfragen und Angebote</li>
+            <li>deine Chatnachrichten</li>
+          </ul>
+          <p className="mt-3 text-ink/80">
+            Bewertungen, die du anderen gegeben hast, bleiben bei ihnen stehen, aber ohne deinen Namen. Dort steht
+            dann „Ehemaliges Mitglied“. Erledigte Hilfen zählen ohne Namen weiter in unserer Statistik.
+          </p>
+          <p className="mt-3 font-bold">Das lässt sich nicht rückgängig machen.</p>
+          <div className="mt-5 flex gap-3">
+            <button type="button" className={`${btn.primary} flex-1`} onClick={close}>
+              Behalten
+            </button>
+            <button type="button" className={`${btn.danger} flex-1`} onClick={() => setStep(2)}>
+              Weiter
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <h2 className="text-2xl font-extrabold">Bist du dir ganz sicher?</h2>
+          <p className="mt-3 text-ink/80">
+            Letzter Schritt. Tippe LÖSCHEN ein und bestätige. Danach ist dein Konto weg.
+          </p>
+          <label className="mt-5 block">
+            <span className="mb-1 block text-sm font-bold">Zum Bestätigen tippe LÖSCHEN</span>
+            <input
+              className={input}
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              autoComplete="off"
+              autoCapitalize="characters"
+            />
+          </label>
+          {error && (
+            <p role="alert" className="mt-3 rounded-2xl bg-accent-soft p-3 text-sm font-bold">
+              {error}
+            </p>
+          )}
+          <div className="mt-5 flex gap-3">
+            <button type="button" className={`${btn.primary} flex-1`} onClick={close} disabled={busy}>
+              Abbrechen
+            </button>
+            <button
+              type="button"
+              className={`${btn.danger} flex-1`}
+              onClick={() => void deleteAccount()}
+              disabled={busy || confirmText.trim().toUpperCase() !== "LÖSCHEN"}
+            >
+              {busy ? "Wird gelöscht …" : "Endgültig löschen"}
+            </button>
+          </div>
+        </>
+      )}
+    </Sheet>
   );
 }
 

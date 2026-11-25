@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import Celebration from "@/components/app/Celebration";
+import PushPrompt from "@/components/app/PushPrompt";
 import { Spinner } from "@/components/ui";
+import { registerServiceWorker, syncPushSubscription } from "@/lib/push";
 import type { OwnProfile } from "@/lib/karma";
 import { getSupabase } from "@/lib/supabase";
 
@@ -25,7 +28,7 @@ export function useApp(): Ctx {
 
 const NAV = [
   { href: "/app", label: "Helfen", icon: "👋" },
-  { href: "/app/neu", label: "Anfragen", icon: "＋" },
+  { href: "/app/neu", label: "Neu", icon: "＋" },
   { href: "/app/meine", label: "Meine", icon: "📋" },
   { href: "/app/profil", label: "Profil", icon: "🙂" },
 ];
@@ -35,6 +38,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [profile, setProfile] = useState<OwnProfile | null>(null);
   const [pending, setPending] = useState(0);
+  // Erst feiern, dann nach Push fragen, nie beides gleichzeitig
+  const [celebrated, setCelebrated] = useState(false);
+  const celebrationDone = useCallback(() => setCelebrated(true), []);
 
   const reloadProfile = useCallback(async () => {
     const supabase = getSupabase();
@@ -51,16 +57,27 @@ export default function AppShell({ children }: { children: ReactNode }) {
     const supabase = getSupabase();
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return;
-    // Offene Angebote auf meine Anfragen plus Anfragen, die ich bestätigen soll
-    const { data } = await supabase
-      .from("help_requests")
-      .select("id, helper_done_at, request_helpers(status)")
-      .eq("requester_id", auth.user.id)
-      .eq("status", "open");
+    // Offene Zusagen auf meine Anfragen und Angebote, plus Bestätigungen, die ich geben soll
+    const [{ data }, { data: helps }] = await Promise.all([
+      supabase
+        .from("help_requests")
+        .select("id, kind, helper_done_at, request_helpers(status)")
+        .eq("requester_id", auth.user.id)
+        .eq("status", "open"),
+      supabase.rpc("my_helps"),
+    ]);
     let n = 0;
-    for (const r of (data ?? []) as { helper_done_at: string | null; request_helpers: { status: string }[] }[]) {
-      if (r.helper_done_at) n += 1;
+    for (const r of (data ?? []) as {
+      kind: string;
+      helper_done_at: string | null;
+      request_helpers: { status: string }[];
+    }[]) {
+      if (r.helper_done_at && r.kind === "request") n += 1;
       n += r.request_helpers.filter((h) => h.status === "offered").length;
+    }
+    // Angebote, die ich angenommen habe und die als erledigt gemeldet sind
+    for (const h of (helps ?? []) as { kind: string; status: string; my_status: string; helper_done_at: string | null }[]) {
+      if (h.kind === "offer" && h.status === "open" && h.my_status === "accepted" && h.helper_done_at) n += 1;
     }
     setPending(n);
   }, []);
@@ -69,6 +86,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- Sitzung und Profil gibt es erst im Browser
     void reloadProfile();
     void refreshPending();
+    void registerServiceWorker().then(() => syncPushSubscription());
     const supabase = getSupabase();
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") router.replace("/");
@@ -100,7 +118,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={{ profile, reloadProfile, pending, refreshPending }}>
-      <div className={`mx-auto w-full max-w-xl px-4 pt-4 ${showNav ? "pb-28" : "pb-10"}`}>{children}</div>
+      <div className={`mx-auto w-full max-w-xl px-4 pt-4 ${showNav ? "pb-28" : "pb-10"}`}>
+        {children}
+      </div>
+      {showNav && <Celebration onDone={celebrationDone} />}
+      {showNav && <PushPrompt ready={celebrated} />}
       {showNav && (
         <nav
           aria-label="Hauptmenü"
@@ -114,10 +136,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative flex flex-col items-center gap-0.5 py-3 text-xs font-bold ${active ? "text-forest" : "text-muted"}`}
+                    className={`relative flex flex-col items-center gap-0.5 py-3 text-xs font-bold ${active ? "text-brand" : "text-muted"}`}
                   >
                     <span
-                      className={`grid h-8 w-12 place-items-center rounded-full text-lg ${active ? "bg-lime" : ""}`}
+                      className={`grid h-8 w-12 place-items-center rounded-full text-lg ${active ? "bg-accent" : ""}`}
                       aria-hidden
                     >
                       {item.icon}

@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useApp } from "@/components/app/AppShell";
+import HomeLocation from "@/components/app/HomeLocation";
+import { OnboardingPush } from "@/components/app/PushSettings";
 import { btn, input } from "@/components/ui";
 import { AGE_GROUPS, errorText, type Gender } from "@/lib/karma";
 import { RULES } from "@/lib/rules";
@@ -19,6 +21,7 @@ export default function Page() {
   const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stage, setStage] = useState<"profile" | "home" | "push">("profile");
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -47,14 +50,34 @@ export default function Page() {
       return;
     }
     await reloadProfile();
-    router.replace("/app");
+    setBusy(false);
+    setStage("home");
   }
+
+  if (stage === "push") return <OnboardingPush onDone={() => router.replace("/app")} />;
+  if (stage === "home")
+    return (
+      <div className="space-y-6 pt-4">
+        <div>
+          <p className="text-sm font-bold text-muted">Noch ein Schritt</p>
+          <h1 className="mt-1 text-3xl font-extrabold text-brand">Wo bist du meistens?</h1>
+          <p className="mt-2 text-muted">
+            Am besten erlaubst du deinen Standort, dann siehst du, was gerade in deiner Nähe los ist, auch
+            unterwegs. Ist der Standort aus, nehmen wir diesen Heimatort.
+          </p>
+        </div>
+        <HomeLocation compact onSaved={() => setStage("push")} />
+        <button type="button" className={`${btn.ghost} w-full`} onClick={() => setStage("push")}>
+          Später
+        </button>
+      </div>
+    );
 
   return (
     <form onSubmit={submit} className="space-y-6 pt-4">
       <div>
         <p className="text-sm font-bold text-muted">Willkommen bei Karma</p>
-        <h1 className="mt-1 text-3xl font-extrabold text-forest">Kurz vorstellen, dann geht es los</h1>
+        <h1 className="mt-1 text-3xl font-extrabold text-brand">Kurz vorstellen, dann geht es los</h1>
       </div>
 
       <div className="grid grid-cols-[1fr_6rem] gap-3">
@@ -92,7 +115,7 @@ export default function Page() {
               key={label}
               type="button"
               onClick={() => setGender(v)}
-              className={`rounded-full px-4 py-2 font-bold ${gender === v ? "bg-forest text-paper" : "bg-white"}`}
+              className={`rounded-full px-4 py-2 font-bold ${gender === v ? "bg-brand text-paper" : "bg-white"}`}
             >
               {label}
             </button>
@@ -130,10 +153,10 @@ export default function Page() {
             </li>
           ))}
         </ul>
-        <label className="mt-4 flex items-start gap-3 rounded-2xl bg-lime/50 p-3 font-bold">
+        <label className="mt-4 flex items-start gap-3 rounded-2xl bg-accent-soft p-3 font-bold">
           <input
             type="checkbox"
-            className="mt-1 h-5 w-5 accent-forest"
+            className="mt-1 h-5 w-5 accent-brand"
             checked={accepted}
             onChange={(e) => setAccepted(e.target.checked)}
             required

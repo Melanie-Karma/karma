@@ -65,7 +65,7 @@ export default function ReportSheet({
               key={r.id}
               type="button"
               onClick={() => setReason(r.id)}
-              className={`w-full rounded-2xl px-4 py-3 text-left font-bold ${reason === r.id ? "bg-forest text-paper" : "bg-white"}`}
+              className={`w-full rounded-2xl px-4 py-3 text-left font-bold ${reason === r.id ? "bg-brand text-paper" : "bg-white"}`}
             >
               {r.label}
             </button>
@@ -80,7 +80,7 @@ export default function ReportSheet({
         />
         {targetUserId && (
           <label className="flex items-center gap-3 font-bold">
-            <input type="checkbox" className="h-5 w-5 accent-forest" checked={block} onChange={(e) => setBlock(e.target.checked)} />
+            <input type="checkbox" className="h-5 w-5 accent-brand" checked={block} onChange={(e) => setBlock(e.target.checked)} />
             Außerdem blockieren
           </label>
         )}

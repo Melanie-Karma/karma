@@ -1,11 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #f6f4ec;
-  --color-ink: #14201a;
-  --color-forest: #0f3d2e;
-  --color-lime: #c6f24e;
-  --color-muted: #5a645f;
+  /* Karma-Farben „Sonnenaufgang“: Petrol, Koralle, Sonnengelb auf warmem Creme */
+  --color-paper: #fff7ef;
+  --color-ink: #23201d;
+  --color-brand: #1d4e5c;
+  --color-brand-soft: #d9ecee;
+  --color-accent: #ff7a59;
+  --color-accent-soft: #ffe1d6;
+  --color-sun: #ffc857;
+  --color-sun-deep: #e8a400;
+  --color-muted: #6b625b;
   --font-sans: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI",
     Roboto, sans-serif;
 }
@@ -13,6 +18,14 @@
 html {
   background: var(--color-paper);
   color: var(--color-ink);
+}
+
+body {
+  background:
+    radial-gradient(60rem 30rem at 110% -10%, rgba(255, 122, 89, 0.14), transparent 60%),
+    radial-gradient(50rem 30rem at -20% 0%, rgba(255, 200, 87, 0.16), transparent 60%),
+    var(--color-paper);
+  background-attachment: fixed;
 }
 
 @keyframes float {
@@ -25,12 +38,49 @@ html {
   }
 }
 
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  15% { transform: translateY(-2px) rotate(4deg) scale(1.03, 0.98); }
+  30% { transform: translateY(0) rotate(-4deg) scale(0.99, 1.02); }
+  45% { transform: translateY(-1px) rotate(2deg); }
+  60% { transform: translateY(0) rotate(-2deg); }
+  80% { transform: translateY(-1px) rotate(3deg); }
+}
+.animate-bob { animation: bob 3s ease-in-out infinite; transform-origin: 50% 85%; }
+
+@keyframes flicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); filter: brightness(1); }
+  25% { transform: scale(1.08, 1.12) rotate(2deg); filter: brightness(1.15); }
+  50% { transform: scale(0.96, 1.04) rotate(-1deg); filter: brightness(1.05); }
+  75% { transform: scale(1.06, 1.1) rotate(3deg); filter: brightness(1.2); }
+}
+.animate-flicker { animation: flicker 0.9s ease-in-out infinite; transform-origin: 50% 90%; }
+
+@keyframes glow {
+  0%, 100% { opacity: .55; transform: scale(.95); }
+  50% { opacity: .95; transform: scale(1.08); }
+}
+.animate-glow { animation: glow 1.4s ease-in-out infinite; }
+
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-float {
+  .animate-float,
+  .animate-bob,
+  .animate-flicker,
+  .animate-glow {
     animation: none;
   }
+}
+
+@keyframes confetti {
+  0% { transform: translateY(-30px) rotate(0deg) scale(.6); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(90px) rotate(200deg) scale(1); opacity: 0; }
+}
+.animate-confetti { animation: confetti 1.8s ease-out 2 both; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-confetti { animation: none; opacity: 0; }
 }
